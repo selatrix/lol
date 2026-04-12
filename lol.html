@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>s3lf</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@500;600;700&display=swap');
+  
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+            user-select: none;
+        }
+  
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+  
+        .glass {
+            background: rgba(15, 15, 22, 0.22);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 15px 40px -20px rgba(0, 0, 0, 0.7);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .social-link {
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+        }
+      
+        .social-link:hover {
+            transform: scale(1.15);
+        }
+
+        .roblox-icon {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 8px;
+            mix-blend-mode: screen;
+            filter: brightness(1.15);
+        }
+        
+        .fa-icon {
+            font-size: 1.85rem;
+        }
+
+        .enter-text {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 1.15rem;
+            letter-spacing: 0.3px;
+            opacity: 0.75;
+        }
+
+        .spotify-art {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .main-pfp {
+            width: 118px;
+            height: 118px;
+            border-radius: 9999px;
+            object-fit: cover;
+            box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.6);
+        }
+
+        .discord-section {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            backdrop-filter: blur(12px);
+        }
+
+        /* Subtle Night Time Filter (reverted to light 15% strength) */
+        #bg-video {
+            filter: brightness(0.78) saturate(0.88) contrast(1.04) hue-rotate(-6deg);
+        }
+
+        /* Perfect Mobile Optimization */
+        @media (max-width: 640px) {
+            #main-content {
+                padding: 16px 12px;
+            }
+            
+            #card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 28px 24px;
+                gap: 24px;
+                max-width: 100%;
+            }
+            
+            .main-pfp {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .title-font {
+                font-size: 2.8rem;
+            }
+            
+            .social-links {
+                gap: 32px;
+                margin-bottom: 20px;
+            }
+            
+            .social-link {
+                width: 46px;
+                height: 46px;
+            }
+            
+            .fa-icon {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen overflow-hidden relative flex items-center justify-center">
+    <!-- Background Video with Subtle Night Filter -->
+    <video id="bg-video" loop playsinline class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
+        <source src="https://file.garden/advUdw57_HghQzKi/cras.mp4" type="video/mp4">
+    </video>
+   
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/85 z-0"></div>
+    
+    <!-- Tap to Enter -->
+    <div id="enter-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-2xl cursor-pointer transition-opacity duration-700">
+        <div class="text-center">
+            <p class="enter-text text-zinc-400">click on it or smth</p>
+        </div>
+    </div>
+
+    <!-- Main Card -->
+    <div id="main-content" class="relative z-10 w-full max-w-md px-4 py-6 hidden">
+        <div id="card-container" class="card-container">
+            <div id="card" class="glass rounded-3xl p-7 flex gap-7 card">
+                
+                <!-- Left: Circular PFP -->
+                <div class="flex-shrink-0">
+                    <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
+                         class="main-pfp">
+                </div>
+
+                <!-- Right: Content -->
+                <div class="flex-1 min-w-0 pt-1">
+                    <!-- Name & Title -->
+                    <div class="mb-6">
+                        <h1 class="title-font text-5xl font-semibold tracking-tighter">s3lf</h1>
+                        <p class="text-zinc-400 text-lg font-bold tracking-widest mt-1">social media expert</p>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="social-links mb-7 text-white/70">
+                        <a href="https://discord.gg/yourinvite" target="_blank" class="social-link">
+                            <i class="fa-brands fa-discord fa-icon"></i>
+                        </a>
+                        <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-link">
+                            <img src="https://media.discordapp.net/attachments/1255692212717752513/1480657907082203237/f62b58e1c76f4fef49829dcdfe7316b0.gif?ex=69dd4ca2&is=69dbfb22&hm=74ddc18773add02d454672e0017d1431ea812d96ece4847b5efa849fa689eb46&="
+                                 alt="Roblox"
+                                 class="roblox-icon">
+                        </a>
+                        <a href="https://instagram.com/shy7" target="_blank" class="social-link">
+                            <i class="fa-brands fa-instagram fa-icon"></i>
+                        </a>
+                    </div>
+
+                    <!-- Discord Presence -->
+                    <div class="discord-section rounded-2xl p-4 text-sm">
+                        <div class="flex items-center gap-3.5 mb-3">
+                            <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/25">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span id="dc-username" class="font-medium truncate"></span>
+                                    <span id="dc-status" class="text-[10px] px-2 py-px rounded"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="activity" class="text-white/80 pl-12 leading-tight"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Volume Button -->
+    <div id="volume-wrapper" class="absolute bottom-6 right-6 z-20">
+        <button id="volume-btn" class="bg-black/70 hover:bg-black/90 backdrop-blur-md border border-white/10 rounded-3xl p-4 transition-all">
+            <i id="volume-icon" class="fa-solid fa-volume-high text-xl text-white/80"></i>
+        </button>
+        <div id="volume-slider-container" class="absolute bottom-16 right-0 bg-black/70 backdrop-blur-md border border-white/10 rounded-3xl px-5 py-4 hidden">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.6" class="accent-zinc-400 w-36 cursor-pointer">
+        </div>
+    </div>
+
+    <script>
+        // Tap to Enter
+        const enterScreen = document.getElementById('enter-screen');
+        const mainContent = document.getElementById('main-content');
+        const video = document.getElementById('bg-video');
+        
+        enterScreen.addEventListener('click', () => {
+            enterScreen.style.opacity = '0';
+            setTimeout(() => {
+                enterScreen.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                video.classList.remove('hidden');
+                video.play();
+            }, 600);
+        });
+
+        // Volume Control
+        const volumeBtn = document.getElementById('volume-btn');
+        const sliderContainer = document.getElementById('volume-slider-container');
+        const slider = document.getElementById('volume-slider');
+        const volumeIcon = document.getElementById('volume-icon');
+        let hideTimeout;
+
+        volumeBtn.addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+            sliderContainer.classList.remove('hidden');
+        });
+        volumeBtn.addEventListener('mouseleave', () => {
+            hideTimeout = setTimeout(() => sliderContainer.classList.add('hidden'), 1200);
+        });
+        slider.addEventListener('input', () => {
+            video.volume = slider.value;
+            if (slider.value == 0) volumeIcon.className = "fa-solid fa-volume-xmark text-xl text-white/80";
+            else if (slider.value < 0.4) volumeIcon.className = "fa-solid fa-volume-low text-xl text-white/80";
+            else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
+        });
+
+        // Smooth 3D Tilt
+        const container = document.getElementById('card-container');
+        const card = document.getElementById('card');
+        let timeoutId = null;
+
+        container.addEventListener('mousemove', (e) => {
+            clearTimeout(timeoutId);
+            const rect = container.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            const rotateY = x * 14;
+            const rotateX = -y * 11;
+            card.style.transform = `perspective(1300px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        container.addEventListener('mouseleave', () => {
+            timeoutId = setTimeout(() => {
+                card.style.transform = `perspective(1300px) rotateX(0deg) rotateY(0deg)`;
+            }, 100);
+        });
+
+        // Discord + Spotify
+        const discordId = "396352442507198465";
+
+        async function updateDiscord() {
+            try {
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`);
+                const json = await res.json();
+                if (!json.success || !json.data) return;
+
+                const d = json.data;
+
+                const avatarUrl = d.discord_user.avatar 
+                    ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}${d.discord_user.avatar.startsWith('a_') ? '.gif' : '.png'}?size=128`
+                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
+                
+                document.getElementById('dc-pfp').src = avatarUrl;
+                document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
+
+                let statusText = "Offline";
+                let statusClass = "bg-zinc-500/20 text-zinc-400";
+                const status = d.discord_status || "offline";
+
+                if (status === "online")      { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
+                else if (status === "idle")   { statusClass = "bg-yellow-500/20 text-yellow-400"; statusText = "Idle"; }
+                else if (status === "dnd")    { statusClass = "bg-red-500/20 text-red-400"; statusText = "DND"; }
+
+                const statusEl = document.getElementById('dc-status');
+                statusEl.className = `text-[10px] px-2 py-px rounded ${statusClass}`;
+                statusEl.textContent = statusText;
+
+                let html = "No current activity";
+                if (d.spotify) {
+                    html = `
+                        <div class="flex items-center gap-3.5">
+                            <img src="${d.spotify.album_art_url}" class="spotify-art" alt="Album">
+                            <div class="min-w-0 flex-1">
+                                <div class="font-medium text-white truncate">${d.spotify.song}</div>
+                                <div class="text-white/70 text-sm truncate">${d.spotify.artist}</div>
+                            </div>
+                        </div>
+                    `;
+                } else if (d.activities && d.activities.length > 0) {
+                    const act = d.activities[0];
+                    html = `<strong>${act.name}</strong>`;
+                    if (act.details) html += `<br><span class="text-white/70">${act.details}</span>`;
+                    if (act.state) html += `<br><span class="text-white/60">${act.state}</span>`;
+                }
+
+                document.getElementById('activity').innerHTML = html;
+            } catch (e) {}
+        }
+
+        window.onload = () => {
+            updateDiscord();
+            setInterval(updateDiscord, 12000);
+        };
+    </script>
+</body>
+</html>
