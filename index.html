@@ -8,31 +8,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@500;600;700&display=swap');
-  
+ 
         body {
             font-family: 'Inter', system_ui, sans-serif;
             user-select: none;
-            min-height: 100vh;
+            min-height: 100dvh;           /* Changed to dvh for better mobile centering */
+            overflow: hidden;
         }
-  
+ 
         .title-font {
             font-family: 'Playfair Display', serif;
         }
-  
+ 
         .glass {
             background: rgba(15, 15, 22, 0.22);
             backdrop-filter: blur(18px);
             border: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 15px 40px -20px rgba(0, 0, 0, 0.7);
         }
-
         .social-links {
             display: flex;
             gap: 28px;
             align-items: center;
             justify-content: center;
         }
-        
+       
         .social-link {
             transition: all 0.3s ease;
             display: flex;
@@ -41,11 +41,10 @@
             width: 42px;
             height: 42px;
         }
-      
+     
         .social-link:hover {
             transform: scale(1.15);
         }
-
         .roblox-icon {
             width: 42px;
             height: 42px;
@@ -54,11 +53,10 @@
             mix-blend-mode: screen;
             filter: brightness(1.15);
         }
-        
+       
         .fa-icon {
             font-size: 1.85rem;
         }
-
         .enter-text {
             font-family: 'Inter', sans-serif;
             font-weight: 400;
@@ -66,7 +64,6 @@
             letter-spacing: 0.3px;
             opacity: 0.75;
         }
-
         .spotify-art {
             width: 42px;
             height: 42px;
@@ -74,7 +71,6 @@
             border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.15);
         }
-
         .main-pfp {
             width: 118px;
             height: 118px;
@@ -82,7 +78,6 @@
             object-fit: cover;
             box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.6);
         }
-
         .discord-section {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.09);
@@ -91,10 +86,11 @@
 
         /* Perfect Centering for All Screens */
         .center-container {
-            min-height: 100vh;
+            min-height: 100dvh;                    /* Changed to dvh */
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;                         /* Added safe padding for phones */
         }
 
         /* Mobile Optimization */
@@ -103,35 +99,38 @@
                 width: 110px;
                 height: 110px;
             }
-            
+           
             .title-font {
                 font-size: 2.75rem;
             }
-            
+           
             .social-links {
                 gap: 32px;
             }
-            
+           
             .social-link {
                 width: 46px;
                 height: 46px;
             }
-            
+           
             .fa-icon {
                 font-size: 2rem;
+            }
+
+            .center-container {
+                padding: 16px;                     /* Slightly less padding on very small screens */
             }
         }
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden relative">
-
     <!-- Background Video with Subtle Night Filter -->
     <video id="bg-video" loop playsinline class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
         <source src="https://file.garden/advUdw57_HghQzKi/cras.mp4" type="video/mp4">
     </video>
-   
+  
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/85 z-0"></div>
-    
+   
     <!-- Tap to Enter - Perfectly Centered -->
     <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/80 backdrop-blur-2xl cursor-pointer transition-opacity duration-700">
         <div class="text-center">
@@ -140,16 +139,15 @@
     </div>
 
     <!-- Main Card - Perfectly Centered -->
-    <div id="main-content" class="center-container relative z-10 w-full px-4 py-6 hidden">
+    <div id="main-content" class="center-container relative z-10 w-full hidden">
         <div id="card-container" class="card-container w-full max-w-md">
             <div id="card" class="glass rounded-3xl p-7 flex gap-7 card">
-                
+               
                 <!-- Left: Circular PFP -->
                 <div class="flex-shrink-0">
                     <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
                          class="main-pfp">
                 </div>
-
                 <!-- Right: Content -->
                 <div class="flex-1 min-w-0 pt-1">
                     <!-- Name & Title -->
@@ -157,7 +155,6 @@
                         <h1 class="title-font text-5xl font-semibold tracking-tighter">s3lf</h1>
                         <p class="text-zinc-400 text-lg font-bold tracking-widest mt-1">social media expert</p>
                     </div>
-
                     <!-- Social Links -->
                     <div class="social-links mb-7 text-white/70">
                         <a href="https://discord.gg/yourinvite" target="_blank" class="social-link">
@@ -172,7 +169,6 @@
                             <i class="fa-brands fa-instagram fa-icon"></i>
                         </a>
                     </div>
-
                     <!-- Discord Presence -->
                     <div class="discord-section rounded-2xl p-4 text-sm">
                         <div class="flex items-center gap-3.5 mb-3">
@@ -206,7 +202,7 @@
         const enterScreen = document.getElementById('enter-screen');
         const mainContent = document.getElementById('main-content');
         const video = document.getElementById('bg-video');
-        
+       
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
             setTimeout(() => {
@@ -261,29 +257,25 @@
 
         // Discord + Spotify
         const discordId = "396352442507198465";
-
         async function updateDiscord() {
             try {
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`);
                 const json = await res.json();
                 if (!json.success || !json.data) return;
-
                 const d = json.data;
-
-                const avatarUrl = d.discord_user.avatar 
+                const avatarUrl = d.discord_user.avatar
                     ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}${d.discord_user.avatar.startsWith('a_') ? '.gif' : '.png'}?size=128`
                     : 'https://cdn.discordapp.com/embed/avatars/0.png';
-                
+               
                 document.getElementById('dc-pfp').src = avatarUrl;
                 document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
 
                 let statusText = "Offline";
                 let statusClass = "bg-zinc-500/20 text-zinc-400";
                 const status = d.discord_status || "offline";
-
-                if (status === "online")      { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
-                else if (status === "idle")   { statusClass = "bg-yellow-500/20 text-yellow-400"; statusText = "Idle"; }
-                else if (status === "dnd")    { statusClass = "bg-red-500/20 text-red-400"; statusText = "DND"; }
+                if (status === "online") { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
+                else if (status === "idle") { statusClass = "bg-yellow-500/20 text-yellow-400"; statusText = "Idle"; }
+                else if (status === "dnd") { statusClass = "bg-red-500/20 text-red-400"; statusText = "DND"; }
 
                 const statusEl = document.getElementById('dc-status');
                 statusEl.className = `text-[10px] px-2 py-px rounded ${statusClass}`;
@@ -306,7 +298,6 @@
                     if (act.details) html += `<br><span class="text-white/70">${act.details}</span>`;
                     if (act.state) html += `<br><span class="text-white/60">${act.state}</span>`;
                 }
-
                 document.getElementById('activity').innerHTML = html;
             } catch (e) {}
         }
