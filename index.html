@@ -12,6 +12,7 @@
         body {
             font-family: 'Inter', system_ui, sans-serif;
             user-select: none;
+            min-height: 100vh;
         }
   
         .title-font {
@@ -88,38 +89,27 @@
             backdrop-filter: blur(12px);
         }
 
-        /* Subtle Night Time Filter (reverted to light 15% strength) */
-        #bg-video {
-            filter: brightness(0.78) saturate(0.88) contrast(1.04) hue-rotate(-6deg);
+        /* Perfect Centering for All Screens */
+        .center-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Perfect Mobile Optimization */
+        /* Mobile Optimization */
         @media (max-width: 640px) {
-            #main-content {
-                padding: 16px 12px;
-            }
-            
-            #card {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                padding: 28px 24px;
-                gap: 24px;
-                max-width: 100%;
-            }
-            
             .main-pfp {
                 width: 110px;
                 height: 110px;
             }
             
             .title-font {
-                font-size: 2.8rem;
+                font-size: 2.75rem;
             }
             
             .social-links {
                 gap: 32px;
-                margin-bottom: 20px;
             }
             
             .social-link {
@@ -133,7 +123,8 @@
         }
     </style>
 </head>
-<body class="bg-black text-white min-h-screen overflow-hidden relative flex items-center justify-center">
+<body class="bg-black text-white overflow-hidden relative">
+
     <!-- Background Video with Subtle Night Filter -->
     <video id="bg-video" loop playsinline class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
         <source src="https://file.garden/advUdw57_HghQzKi/cras.mp4" type="video/mp4">
@@ -141,16 +132,16 @@
    
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/85 z-0"></div>
     
-    <!-- Tap to Enter -->
-    <div id="enter-screen" class="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-2xl cursor-pointer transition-opacity duration-700">
+    <!-- Tap to Enter - Perfectly Centered -->
+    <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/80 backdrop-blur-2xl cursor-pointer transition-opacity duration-700">
         <div class="text-center">
             <p class="enter-text text-zinc-400">click on it or smth</p>
         </div>
     </div>
 
-    <!-- Main Card -->
-    <div id="main-content" class="relative z-10 w-full max-w-md px-4 py-6 hidden">
-        <div id="card-container" class="card-container">
+    <!-- Main Card - Perfectly Centered -->
+    <div id="main-content" class="center-container relative z-10 w-full px-4 py-6 hidden">
+        <div id="card-container" class="card-container w-full max-w-md">
             <div id="card" class="glass rounded-3xl p-7 flex gap-7 card">
                 
                 <!-- Left: Circular PFP -->
