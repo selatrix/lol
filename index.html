@@ -2,310 +2,673 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>s3lf</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Uncasing • Digital Asset Intelligence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@500;600;700&display=swap');
- 
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+   
+        :root {
+            --bg: #000000;
+            --text: #f0f0f0;
+            --accent: #666666;
+            --card: #0a0a0a;
+        }
+   
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+   
         body {
-            font-family: 'Inter', system_ui, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
             user-select: none;
-            min-height: 100dvh;           /* Changed to dvh for better mobile centering */
-            overflow: hidden;
         }
- 
-        .title-font {
-            font-family: 'Playfair Display', serif;
+   
+        canvas {
+            image-rendering: pixelated;
+            display: block;
         }
- 
-        .glass {
-            background: rgba(15, 15, 22, 0.22);
-            backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 15px 40px -20px rgba(0, 0, 0, 0.7);
-        }
-        .social-links {
+   
+        .hero {
+            min-height: 100vh;
             display: flex;
-            gap: 28px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+            background: linear-gradient(to bottom, #050505, #000000);
+            padding: 80px 20px 140px; /* Increased bottom padding */
+        }
+   
+        .tagline {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 4.2px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+   
+        h1 {
+            font-size: clamp(42px, 7.8vw, 62px);
+            font-weight: 700;
+            letter-spacing: -2.6px;
+            line-height: 1.04;
+            margin-bottom: 24px;
+        }
+   
+        .subtag {
+            font-size: clamp(16px, 4.2vw, 16.8px);
+            color: #8a8a8a;
+            max-width: 460px;
+            margin: 0 auto 72px;
+            line-height: 1.62;
+        }
+   
+        .subtag strong {
+            color: #d0d0d0;
+            font-weight: 500;
+        }
+   
+        .game-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 110px; /* Increased spacing below game */
+            width: 100%;
+            max-width: 800px;
+        }
+   
+        canvas {
+            border-radius: 20px;
+            box-shadow: 0 40px 90px rgba(0, 0, 0, 0.95);
+            border: 1px solid #1a1a1a;
+            width: 100%;
+            height: auto;
+            max-width: 800px;
+        }
+   
+        #score {
+            position: absolute;
+            top: 26px;
+            right: 32px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #555;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            letter-spacing: 1.2px;
+            z-index: 10;
+        }
+   
+        .game-over-score {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15px;
+            color: #777;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            text-align: center;
+            line-height: 1.5;
+        }
+   
+        .scroll-hint {
+            font-size: 11.5px;
+            color: #555;
+            letter-spacing: 4.5px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            opacity: 0.8;
+            animation: gentlePulse 4s infinite ease-in-out;
+            margin-top: 40px; /* Pushes it further down */
+        }
+   
+        @keyframes gentlePulse {
+            0%, 100% { opacity: 0.55; }
+            50% { opacity: 0.95; }
+        }
+   
+        .content {
+            padding: 110px 20px 140px;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+   
+        h2 {
+            font-size: clamp(26px, 6vw, 28px);
+            font-weight: 600;
+            letter-spacing: -0.8px;
+            margin-bottom: 28px;
+            color: #e8e8e8;
+        }
+   
+        p {
+            font-size: clamp(15.2px, 4vw, 15.8px);
+            color: #9e9e9e;
+            margin-bottom: 32px;
+            max-width: 620px;
+        }
+   
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            margin-top: 58px;
+        }
+   
+        @media (min-width: 640px) {
+            .service-grid {
+                grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            }
+        }
+   
+        .service-card {
+            background: var(--card);
+            border: 1px solid #1f1f1f;
+            border-radius: 20px;
+            padding: 42px 34px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+   
+        .service-card:hover {
+            border-color: #444;
+            transform: translateY(-8px);
+        }
+   
+        .service-card h3 {
+            font-size: 19.5px;
+            margin-bottom: 18px;
+            color: #e0e0e0;
+        }
+   
+        .methodology {
+            background: #080808;
+            border: 1px solid #1f1f1f;
+            border-radius: 22px;
+            padding: 58px 28px;
+            margin-top: 80px;
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+   
+        @media (min-width: 640px) {
+            .methodology {
+                padding: 58px 48px;
+            }
+        }
+   
+        .steps {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 48px;
+            margin-top: 52px;
+        }
+   
+        @media (min-width: 640px) {
+            .steps {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+   
+        .step {
+            position: relative;
+            padding-left: 58px;
+        }
+   
+        .step-number {
+            position: absolute;
+            left: 0;
+            font-size: 13.2px;
+            font-weight: 700;
+            color: #555;
+            width: 34px;
+            height: 34px;
+            border: 1px solid #333;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
-       
-        .social-link {
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
+   
+        .cta-button {
+            display: inline-block;
+            margin-top: 52px;
+            padding: 17px 50px;
+            background: transparent;
+            color: #b3b3b3;
+            border: 1px solid #555;
+            border-radius: 9999px;
+            font-size: 14.8px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            text-decoration: none;
+        }
+   
+        .cta-button:hover {
+            transform: scale(1.05);
+            border-color: #777;
+            color: #fff;
+            box-shadow: 0 0 40px rgba(120, 120, 120, 0.2);
+            background: rgba(255,255,255,0.02);
+        }
+   
+        .footer {
+            text-align: center;
+            padding: 110px 20px 90px;
+            border-top: 1px solid #1a1a1a;
+            color: #555;
+            font-size: 13px;
+        }
+      
+        .footer p {
+            margin-bottom: 12px;
+            max-width: 540px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+      
+        .copyright {
+            font-size: 10.5px;
+            color: #3a3a3a;
+            letter-spacing: 1.8px;
+            margin-bottom: 10px;
+        }
+        .disclaimer {
+            font-size: 12.2px;
+            color: #444;
+            line-height: 1.55;
+            max-width: 520px;
+            margin: 0 auto 18px;
+        }
+        .made-by {
+            font-size: 10.8px;
+            color: #3a3a3a;
+            letter-spacing: 2px;
+        }
+        /* Music Toggle */
+        .music-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(15,15,15,0.95);
+            border: 1px solid #292929;
+            color: #666;
+            padding: 10px 22px;
+            border-radius: 9999px;
+            font-size: 11.5px;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            z-index: 300;
+            transition: all 0.4s ease;
+            user-select: none;
         }
      
-        .social-link:hover {
-            transform: scale(1.15);
+        .music-toggle:hover {
+            color: #aaa;
+            border-color: #4a4a4a;
         }
-        .roblox-icon {
-            width: 42px;
-            height: 42px;
-            object-fit: contain;
-            border-radius: 8px;
-            mix-blend-mode: screen;
-            filter: brightness(1.15);
-        }
-       
-        .fa-icon {
-            font-size: 1.85rem;
-        }
-        .enter-text {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 1.15rem;
-            letter-spacing: 0.3px;
-            opacity: 0.75;
-        }
-        .spotify-art {
-            width: 42px;
-            height: 42px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-        .main-pfp {
-            width: 118px;
-            height: 118px;
-            border-radius: 9999px;
-            object-fit: cover;
-            box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.6);
-        }
-        .discord-section {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            backdrop-filter: blur(12px);
-        }
-
-        /* Perfect Centering for All Screens */
-        .center-container {
-            min-height: 100dvh;                    /* Changed to dvh */
-            display: flex;
+        /* Clean Music Visualizer */
+        #music-visualizer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.92);
+            border-top: 1px solid #1a1a1a;
+            display: none;
             align-items: center;
             justify-content: center;
-            padding: 20px;                         /* Added safe padding for phones */
+            gap: 4px;
+            z-index: 200;
+            padding-bottom: 10px;
         }
-
-        /* Mobile Optimization */
-        @media (max-width: 640px) {
-            .main-pfp {
-                width: 110px;
-                height: 110px;
+        .bar {
+            width: 3.5px;
+            height: 6px;
+            background: #555;
+            border-radius: 999px;
+            transition: height 0.08s ease;
+            animation: pulse 1.2s infinite ease-in-out;
+        }
+        .bar:nth-child(2) { animation-delay: 0.1s; }
+        .bar:nth-child(3) { animation-delay: 0.25s; }
+        .bar:nth-child(4) { animation-delay: 0.15s; }
+        .bar:nth-child(5) { animation-delay: 0.3s; }
+        .bar:nth-child(6) { animation-delay: 0.08s; }
+        .bar:nth-child(7) { animation-delay: 0.22s; }
+        @keyframes pulse {
+            0%, 100% { height: 6px; }
+            50% { height: 30px; }
+        }
+        /* Better mobile scaling */
+        @media (max-width: 480px) {
+            .hero {
+                padding: 70px 16px 110px;
             }
-           
-            .title-font {
-                font-size: 2.75rem;
+            .content {
+                padding: 90px 16px 120px;
             }
-           
-            .social-links {
-                gap: 32px;
+            .footer {
+                padding: 90px 16px 70px;
             }
-           
-            .social-link {
-                width: 46px;
-                height: 46px;
+            .game-wrapper {
+                margin-bottom: 80px;
             }
-           
-            .fa-icon {
-                font-size: 2rem;
-            }
-
-            .center-container {
-                padding: 16px;                     /* Slightly less padding on very small screens */
+            .service-card {
+                padding: 36px 24px;
             }
         }
     </style>
 </head>
-<body class="bg-black text-white overflow-hidden relative">
-    <!-- Background Video with Subtle Night Filter -->
-    <video id="bg-video" loop playsinline class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
-        <source src="https://file.garden/advUdw57_HghQzKi/cras.mp4" type="video/mp4">
-    </video>
-  
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/85 z-0"></div>
+<body>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="tagline">DIGITAL ASSET INTELLIGENCE</div>
+        <h1>Clarity in a Broken System.</h1>
+        <p class="subtag">
+            No explanation? No transparency?<br>
+            <strong>Uncasing fixes that.</strong>
+        </p>
    
-    <!-- Tap to Enter - Perfectly Centered -->
-    <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/80 backdrop-blur-2xl cursor-pointer transition-opacity duration-700">
-        <div class="text-center">
-            <p class="enter-text text-zinc-400">click on it or smth</p>
+        <div class="game-wrapper">
+            <canvas id="game" width="800" height="180"></canvas>
+            <div id="score">0</div>
+            <div id="game-over-score" class="game-over-score">
+                GAME OVER<br>
+                <span id="final-score" style="font-size:18px; color:#999; display:block; margin:8px 0;"></span>
+                <span style="font-size:13px; color:#555;">Tap to restart in auto mode</span>
+            </div>
         </div>
-    </div>
-
-    <!-- Main Card - Perfectly Centered -->
-    <div id="main-content" class="center-container relative z-10 w-full hidden">
-        <div id="card-container" class="card-container w-full max-w-md">
-            <div id="card" class="glass rounded-3xl p-7 flex gap-7 card">
-               
-                <!-- Left: Circular PFP -->
-                <div class="flex-shrink-0">
-                    <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
-                         class="main-pfp">
+   
+        <div class="scroll-hint">
+            SCROLL TO EXPLORE <span style="font-size:18px;">↓</span>
+        </div>
+    </section>
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <section>
+            <h2>Structure. Control. Precision.</h2>
+            <p>We audit restricted social media assets through rigorous technical analysis and direct policy alignment. No assumptions. No speculation. Only clear, verifiable evaluation.</p>
+       
+            <div class="service-grid">
+                <div class="service-card">
+                    <h3>Policy Violation Audit</h3>
+                    <p>We isolate the exact trigger points in your content that activated platform restrictions, flags, or suppression — mapped directly to current enforcement logic.</p>
                 </div>
-                <!-- Right: Content -->
-                <div class="flex-1 min-w-0 pt-1">
-                    <!-- Name & Title -->
-                    <div class="mb-6">
-                        <h1 class="title-font text-5xl font-semibold tracking-tighter">s3lf</h1>
-                        <p class="text-zinc-400 text-lg font-bold tracking-widest mt-1">social media expert</p>
+                <div class="service-card">
+                    <h3>Risk &amp; Account Standing Assessment</h3>
+                    <p>Comprehensive review of strike severity, shadowban exposure, and realistic recovery pathways based on observable platform behavior.</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div id="methodology" class="methodology" style="filter: blur(18px); opacity: 0.28;">
+                <h2>Communication Strategy &amp; Appeal Architecture</h2>
+                <p>We craft precise, policy-aligned appeal submissions. No emotional language. Only structured, defensible communication designed for maximum clarity and compliance.</p>
+           
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">01</div>
+                        <h3>Intake</h3>
+                        <p>Secure submission of account data, restriction logs, and relevant material.</p>
                     </div>
-                    <!-- Social Links -->
-                    <div class="social-links mb-7 text-white/70">
-                        <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-link">
-                            <i class="fa-brands fa-discord fa-icon"></i>
-                        </a>
-                        <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-link">
-                            <img src="https://media.discordapp.net/attachments/1255692212717752513/1480657907082203237/f62b58e1c76f4fef49829dcdfe7316b0.gif?ex=69dd4ca2&is=69dbfb22&hm=74ddc18773add02d454672e0017d1431ea812d96ece4847b5efa849fa689eb46&="
-                                 alt="Roblox"
-                                 class="roblox-icon">
-                        </a>
-                        <a href="https://instagram.com/shy7" target="_blank" class="social-link">
-                            <i class="fa-brands fa-instagram fa-icon"></i>
-                        </a>
+                    <div class="step">
+                        <div class="step-number">02</div>
+                        <h3>Analysis</h3>
+                        <p>Cross-referenced evaluation against live enforcement systems and policy frameworks.</p>
                     </div>
-                    <!-- Discord Presence -->
-                    <div class="discord-section rounded-2xl p-4 text-sm">
-                        <div class="flex items-center gap-3.5 mb-3">
-                            <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/25">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <span id="dc-username" class="font-medium truncate"></span>
-                                    <span id="dc-status" class="text-[10px] px-2 py-px rounded"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="activity" class="text-white/80 pl-12 leading-tight"></div>
+                    <div class="step">
+                        <div class="step-number">03</div>
+                        <h3>Report</h3>
+                        <p>Precise breakdown of violations, risk vectors, and required corrective actions.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">04</div>
+                        <h3>Execution Guidance</h3>
+                        <p>Structured direction for submitting appeals through official channels.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Volume Button -->
-    <div id="volume-wrapper" class="absolute bottom-6 right-6 z-20">
-        <button id="volume-btn" class="bg-black/70 hover:bg-black/90 backdrop-blur-md border border-white/10 rounded-3xl p-4 transition-all">
-            <i id="volume-icon" class="fa-solid fa-volume-high text-xl text-white/80"></i>
-        </button>
-        <div id="volume-slider-container" class="absolute bottom-16 right-0 bg-black/70 backdrop-blur-md border border-white/10 rounded-3xl px-5 py-4 hidden">
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.6" class="accent-zinc-400 w-36 cursor-pointer">
-        </div>
-    </div>
-
-    <script>
-        // Tap to Enter
-        const enterScreen = document.getElementById('enter-screen');
-        const mainContent = document.getElementById('main-content');
-        const video = document.getElementById('bg-video');
+        </section>
+        <section style="text-align: center;">
+            <h2>Professional Guidance.<br>No Ambiguity.</h2>
+            <p style="max-width: 480px; margin: 0 auto 40px; color:#999;">
+                Private consultation for restricted accounts.<br>Direct. Honest. Data-driven assessment.
+            </p>
        
-        enterScreen.addEventListener('click', () => {
-            enterScreen.style.opacity = '0';
-            setTimeout(() => {
-                enterScreen.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                video.classList.remove('hidden');
-                video.play();
-            }, 600);
-        });
-
-        // Volume Control
-        const volumeBtn = document.getElementById('volume-btn');
-        const sliderContainer = document.getElementById('volume-slider-container');
-        const slider = document.getElementById('volume-slider');
-        const volumeIcon = document.getElementById('volume-icon');
-        let hideTimeout;
-
-        volumeBtn.addEventListener('mouseenter', () => {
-            clearTimeout(hideTimeout);
-            sliderContainer.classList.remove('hidden');
-        });
-        volumeBtn.addEventListener('mouseleave', () => {
-            hideTimeout = setTimeout(() => sliderContainer.classList.add('hidden'), 1200);
-        });
-        slider.addEventListener('input', () => {
-            video.volume = slider.value;
-            if (slider.value == 0) volumeIcon.className = "fa-solid fa-volume-xmark text-xl text-white/80";
-            else if (slider.value < 0.4) volumeIcon.className = "fa-solid fa-volume-low text-xl text-white/80";
-            else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
-        });
-
-        // Smooth 3D Tilt
-        const container = document.getElementById('card-container');
-        const card = document.getElementById('card');
-        let timeoutId = null;
-
-        container.addEventListener('mousemove', (e) => {
-            clearTimeout(timeoutId);
-            const rect = container.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            const rotateY = x * 14;
-            const rotateX = -y * 11;
-            card.style.transform = `perspective(1300px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-
-        container.addEventListener('mouseleave', () => {
-            timeoutId = setTimeout(() => {
-                card.style.transform = `perspective(1300px) rotateX(0deg) rotateY(0deg)`;
-            }, 100);
-        });
-
-        // Discord + Spotify
-        const discordId = "396352442507198465";
-        async function updateDiscord() {
-            try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`);
-                const json = await res.json();
-                if (!json.success || !json.data) return;
-                const d = json.data;
-                const avatarUrl = d.discord_user.avatar
-                    ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}${d.discord_user.avatar.startsWith('a_') ? '.gif' : '.png'}?size=128`
-                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
-               
-                document.getElementById('dc-pfp').src = avatarUrl;
-                document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
-
-                let statusText = "Offline";
-                let statusClass = "bg-zinc-500/20 text-zinc-400";
-                const status = d.discord_status || "offline";
-                if (status === "online") { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
-                else if (status === "idle") { statusClass = "bg-yellow-500/20 text-yellow-400"; statusText = "Idle"; }
-                else if (status === "dnd") { statusClass = "bg-red-500/20 text-red-400"; statusText = "DND"; }
-
-                const statusEl = document.getElementById('dc-status');
-                statusEl.className = `text-[10px] px-2 py-px rounded ${statusClass}`;
-                statusEl.textContent = statusText;
-
-                let html = "No current activity";
-                if (d.spotify) {
-                    html = `
-                        <div class="flex items-center gap-3.5">
-                            <img src="${d.spotify.album_art_url}" class="spotify-art" alt="Album">
-                            <div class="min-w-0 flex-1">
-                                <div class="font-medium text-white truncate">${d.spotify.song}</div>
-                                <div class="text-white/70 text-sm truncate">${d.spotify.artist}</div>
-                            </div>
-                        </div>
-                    `;
-                } else if (d.activities && d.activities.length > 0) {
-                    const act = d.activities[0];
-                    html = `<strong>${act.name}</strong>`;
-                    if (act.details) html += `<br><span class="text-white/70">${act.details}</span>`;
-                    if (act.state) html += `<br><span class="text-white/60">${act.state}</span>`;
-                }
-                document.getElementById('activity').innerHTML = html;
-            } catch (e) {}
+            <a href="https://t.me/unreeves" target="_blank" class="cta-button">
+                START CONSULTATION
+            </a>
+        </section>
+    </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p class="copyright">Uncasing Advisory © 2026</p>
+        <p class="disclaimer">
+            Independent advisory service focused on platform policy navigation.<br>
+            Not affiliated with Meta, Instagram, X, or any social platform.
+        </p>
+        <div class="made-by">CREATED BY S3LF</div>
+    </footer>
+    <!-- Music Toggle -->
+    <div class="music-toggle" id="music-toggle">♪ MUSIC ON</div>
+    <!-- Clean Music Visualizer -->
+    <div id="music-visualizer">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://file.garden/advUdw57_HghQzKi/Slow%20Jamz.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        // Game Logic (unchanged)
+        const canvas = document.getElementById("game");
+        const ctx = canvas.getContext("2d");
+        const scoreEl = document.getElementById("score");
+        const gameOverScore = document.getElementById("game-over-score");
+        const finalScoreEl = document.getElementById("final-score");
+    
+        let lastTime = 0;
+        const GRAVITY = 0.6;
+        const SPEED = 5;
+        const GROUND_Y = 150;
+    
+        let dino = { x: 70, y: GROUND_Y - 24, vy: 0, jumps: 0 };
+        let obstacles = [];
+        let score = 0;
+        let mode = "auto";
+        let nextSpawnX = 800;
+        let isGameOver = false;
+        function spawnIfNeeded() {
+            if (nextSpawnX < canvas.width) {
+                const rand = Math.random();
+                let type = rand > 0.7 ? "double" : (rand > 0.4 ? "tall" : "small");
+                let obs = { x: canvas.width, type };
+                if (type === "small") { obs.w = 14; obs.h = 28; }
+                if (type === "tall") { obs.w = 16; obs.h = 42; }
+                if (type === "double") { obs.w = 34; obs.h = 28; }
+                obs.y = GROUND_Y - obs.h;
+                obstacles.push(obs);
+                nextSpawnX = canvas.width + 520 + Math.random() * 380;
+            }
         }
-
-        window.onload = () => {
-            updateDiscord();
-            setInterval(updateDiscord, 12000);
-        };
+        function act() {
+            if (isGameOver) { reset(); return; }
+            if (mode === "auto") {
+                mode = "manual";
+                scoreEl.style.opacity = "1";
+            }
+            if (dino.jumps < 2) {
+                dino.vy = -11.5;
+                dino.jumps++;
+            }
+        }
+        document.addEventListener("keydown", e => { if (e.code === "Space") { e.preventDefault(); act(); } });
+        canvas.addEventListener("mousedown", act);
+        canvas.addEventListener("touchstart", e => { e.preventDefault(); act(); });
+        function autoPlay() {
+            for (let o of obstacles) {
+                if (o.x < dino.x + 110 && o.x > dino.x && dino.y >= GROUND_Y - 24) {
+                    dino.vy = -11.5;
+                    return;
+                }
+            }
+        }
+        function drawDino() {
+            ctx.fillStyle = "#eee";
+            ctx.fillRect(dino.x, dino.y, 20, 16);
+            ctx.fillRect(dino.x + 12, dino.y - 10, 12, 12);
+            ctx.fillStyle = "#111";
+            ctx.fillRect(dino.x + 20, dino.y - 4, 2, 2);
+            ctx.fillStyle = "#eee";
+            ctx.fillRect(dino.x - 6, dino.y + 6, 6, 4);
+            const legFrame = (Date.now() >> 6) % 2;
+            if (legFrame) {
+                ctx.fillRect(dino.x + 4, dino.y + 16, 4, 8);
+                ctx.fillRect(dino.x + 12, dino.y + 16, 4, 8);
+            } else {
+                ctx.fillRect(dino.x + 6, dino.y + 16, 4, 8);
+                ctx.fillRect(dino.x + 14, dino.y + 16, 4, 8);
+            }
+        }
+        function drawCactus(o) {
+            ctx.fillStyle = "#bbb";
+            if (o.type === "small") {
+                ctx.fillRect(o.x, o.y, 6, o.h);
+                ctx.fillRect(o.x - 4, o.y + 8, 4, 6);
+                ctx.fillRect(o.x + 6, o.y + 12, 4, 6);
+            } else if (o.type === "tall") {
+                ctx.fillRect(o.x, o.y, 6, o.h);
+                ctx.fillRect(o.x - 4, o.y + 18, 4, 8);
+                ctx.fillRect(o.x + 6, o.y + 24, 4, 8);
+            } else if (o.type === "double") {
+                ctx.fillRect(o.x, o.y, 6, o.h);
+                ctx.fillRect(o.x + 12, o.y, 6, o.h - 4);
+            }
+        }
+        function reset() {
+            obstacles = [];
+            score = 0;
+            mode = "auto";
+            dino.y = GROUND_Y - 20;
+            dino.vy = 0;
+            dino.jumps = 0;
+            scoreEl.style.opacity = "0";
+            gameOverScore.style.opacity = "0";
+            gameOverScore.style.pointerEvents = "none";
+            nextSpawnX = 800;
+            isGameOver = false;
+        }
+        function triggerGameOver() {
+            isGameOver = true;
+            finalScoreEl.textContent = Math.floor(score);
+            gameOverScore.style.opacity = "1";
+            gameOverScore.style.pointerEvents = "auto";
+            scoreEl.style.opacity = "0";
+        }
+        function loop(time = 0) {
+            const delta = (time - lastTime) / 16 || 1;
+            lastTime = time;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+       
+            ctx.strokeStyle = "#444";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, GROUND_Y);
+            ctx.lineTo(canvas.width, GROUND_Y);
+            ctx.stroke();
+       
+            if (mode === "auto" && !isGameOver) autoPlay();
+       
+            dino.y += dino.vy * delta;
+            dino.vy += GRAVITY * delta;
+            if (dino.y >= GROUND_Y - 20) {
+                dino.y = GROUND_Y - 20;
+                dino.vy = 0;
+                dino.jumps = 0;
+            }
+       
+            drawDino();
+       
+            for (let o of obstacles) {
+                o.x -= SPEED * delta;
+                drawCactus(o);
+            }
+       
+            nextSpawnX -= SPEED * delta;
+            spawnIfNeeded();
+            obstacles = obstacles.filter(o => o.x > -50);
+       
+            if (mode === "manual" && !isGameOver) {
+                for (let o of obstacles) {
+                    if (dino.x < o.x + (o.w || 16) && dino.x + 20 > o.x &&
+                        dino.y < o.y + o.h && dino.y + 20 > o.y) {
+                        triggerGameOver();
+                        break;
+                    }
+                }
+                score += 0.085 * delta;
+                scoreEl.textContent = Math.floor(score);
+            }
+            requestAnimationFrame(loop);
+        }
+        // Blur reveal
+        const methodology = document.getElementById("methodology");
+        function revealOnScroll() {
+            if (methodology.getBoundingClientRect().top < window.innerHeight * 0.78) {
+                methodology.style.filter = "blur(0px)";
+                methodology.style.opacity = "1";
+            }
+        }
+        window.addEventListener("scroll", revealOnScroll);
+        setTimeout(revealOnScroll, 800);
+        // Music + Visualizer
+        const audio = document.getElementById("bg-music");
+        const toggleBtn = document.getElementById("music-toggle");
+        const visualizer = document.getElementById("music-visualizer");
+        let isPlaying = false;
+        audio.volume = 0.10;
+        function startMusic() {
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    toggleBtn.textContent = "♪ MUSIC ON";
+                    visualizer.style.display = "flex";
+                }).catch(() => {});
+            }
+        }
+        document.addEventListener('click', startMusic, { once: true });
+        document.addEventListener('touchstart', startMusic, { once: true });
+        toggleBtn.addEventListener("click", () => {
+            if (isPlaying) {
+                audio.pause();
+                toggleBtn.textContent = "♪ MUSIC OFF";
+                visualizer.style.display = "none";
+            } else {
+                audio.play().then(() => {
+                    toggleBtn.textContent = "♪ MUSIC ON";
+                    visualizer.style.display = "flex";
+                }).catch(() => {});
+            }
+            isPlaying = !isPlaying;
+        });
+        requestAnimationFrame(loop);
     </script>
 </body>
 </html>
