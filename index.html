@@ -8,65 +8,80 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@500;600;700&display=swap');
+     
+        :root {
+            --glass-bg: rgba(15, 15, 22, 0.28);
+            --glass-border: rgba(255, 255, 255, 0.10);
+        }
        
         body {
             font-family: 'Inter', system_ui, sans-serif;
             user-select: none;
             min-height: 100dvh;
             overflow: hidden;
+            background: #000;
         }
-        .title-font { font-family: 'Playfair Display', serif; }
        
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+     
         .glass {
-            background: rgba(15, 15, 22, 0.22);
-            backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 15px 40px -20px rgba(0, 0, 0, 0.7);
+            background: var(--glass-bg);
+            backdrop-filter: blur(26px);
+            -webkit-backdrop-filter: blur(26px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -20px rgba(0, 0, 0, 0.7);
         }
-        
-        .social-links { 
-            display: flex; 
-            gap: 24px; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        
-        .social-link {
-            transition: all 0.3s ease;
-            display: flex; 
-            align-items: center; 
+      
+        .social-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
             justify-content: center;
-            width: 34px; 
-            height: 34px;
         }
-        
-        .social-link:hover { 
-            transform: scale(1.25); 
+      
+        .social-link {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            color: rgba(255,255,255,0.8);
         }
-        
+      
+        .social-link:hover {
+            transform: scale(1.28);
+            color: white;
+        }
+      
         .roblox-icon {
-            width: 34px; 
-            height: 34px; 
+            width: 36px;
+            height: 36px;
             object-fit: contain;
             border-radius: 8px;
-            mix-blend-mode: screen; 
-            filter: brightness(1.2);
+            filter: brightness(1.12);
+            pointer-events: none;
+            -webkit-user-drag: none;
         }
-        
+      
         .main-pfp {
-            width: 118px; 
-            height: 118px;
+            width: 127px;
+            height: 127px;
             border-radius: 9999px;
             object-fit: cover;
-            box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            -webkit-user-drag: none;
         }
-        
+      
         .discord-section {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
         }
-        
+      
         .center-container {
             min-height: 100dvh;
             display: flex;
@@ -74,200 +89,164 @@
             justify-content: center;
             padding: 20px;
         }
-        
-        #card {
-            transition: transform 0.12s cubic-bezier(0.23, 1.0, 0.32, 1);
-            will-change: transform;
-        }
-        
-        @media (max-width: 640px) {
-            .main-pfp { width: 110px; height: 110px; }
-            .title-font { font-size: 2.75rem; }
-            .social-links { gap: 28px; }
-            .social-link { width: 38px; height: 38px; }
-            .roblox-icon { width: 38px; height: 38px; }
+
+        .enter-text {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            color: #999;
         }
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden relative">
     <!-- Background Video -->
     <video id="bg-video" loop playsinline class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
-        <source src="https://file.garden/advUdw57_HghQzKi/cras.mp4" type="video/mp4">
+        <source src="https://file.garden/advUdw57_HghQzKi/SaveClip.App_AQPSqUFZhQat87Hui2mxwSSV12bf95R_PNksKH5ivoX6tPv1iPOloC9l7DHhdT0Ff170IiakwFmWZUBjqkUPOz10VxahigezC-52H5s.mp4" type="video/mp4">
     </video>
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black/85 z-0"></div>
-
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/65 to-black/95 z-0"></div>
+   
     <!-- Tap to Enter -->
-    <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/80 backdrop-blur-2xl cursor-pointer transition-opacity duration-700">
+    <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/85 backdrop-blur-2xl cursor-pointer transition-all duration-700">
         <div class="text-center">
-            <p class="enter-text text-zinc-400">tap anywhere to enter</p>
+            <p class="enter-text">click on it or smth</p>
         </div>
     </div>
-
+   
     <!-- Main Card -->
     <div id="main-content" class="center-container relative z-10 w-full hidden">
-        <div id="card-container" class="w-full max-w-md">
-            <div id="card" class="glass rounded-3xl p-8 flex gap-7">
-                <!-- Left: PFP -->
-                <div class="flex-shrink-0">
-                    <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
-                         class="main-pfp">
+        <div id="card" class="glass rounded-3xl px-9 py-8 flex gap-8 max-w-[460px] w-full">
+            <!-- Left: PFP (protected + slightly smaller) -->
+            <div class="flex-shrink-0">
+                <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
+                     class="main-pfp" 
+                     draggable="false"
+                     oncontextmenu="return false;">
+            </div>
+            
+            <!-- Right Side -->
+            <div class="flex-1 min-w-0 pt-1">
+                <div class="mb-6">
+                    <h1 class="title-font text-5xl font-semibold tracking-[-2px]">s3lf</h1>
+                    <p class="text-zinc-400 text-lg font-medium tracking-widest mt-1">social media expert</p>
                 </div>
-
-                <!-- Right: Content -->
-                <div class="flex-1 min-w-0 pt-1">
-                    <div class="mb-6">
-                        <h1 class="title-font text-5xl font-semibold tracking-tighter">s3lf</h1>
-                        <p class="text-zinc-400 text-lg font-bold tracking-widest mt-1">social media expert</p>
-                    </div>
-                    
-                    <!-- Social Links -->
-                    <div class="social-links mb-8 text-white/70">
-                        <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-link">
-                            <i class="fa-brands fa-discord text-3xl"></i>
-                        </a>
-                        
-                        <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-link">
-                            <img src="https://media.discordapp.net/attachments/1255692212717752513/1480657907082203237/f62b58e1c76f4fef49829dcdfe7316b0.gif?ex=69de9e22&is=69dd4ca2&hm=201d99ca5ef2084f5868b0a0f047e668bc1c67abd5b590da5c6109a9a91c3778&="
-                                 alt="Roblox" class="roblox-icon">
-                        </a>
-                        
-                        <a href="https://instagram.com/shy7" target="_blank" class="social-link">
-                            <i class="fa-brands fa-instagram text-3xl"></i>
-                        </a>
-                    </div>
-
-                    <!-- Discord Presence -->
-                    <div class="discord-section rounded-2xl p-4 text-sm">
-                        <div class="flex items-center gap-3.5 mb-3">
-                            <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/25">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <span id="dc-username" class="font-medium truncate"></span>
-                                    <span id="dc-status" class="text-[10px] px-2 py-px rounded"></span>
-                                </div>
+                
+                <div class="social-links mb-9">
+                    <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-link">
+                        <i class="fa-brands fa-discord text-3xl"></i>
+                    </a>
+                    <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-link">
+                        <img src="https://media.discordapp.net/attachments/1255692212717752513/1480657907082203237/f62b58e1c76f4fef49829dcdfe7316b0.gif?ex=69de9e22&is=69dd4ca2&hm=201d99ca5ef2084f5868b0a0f047e668bc1c67abd5b590da5c6109a9a91c3778&="
+                             alt="Roblox" class="roblox-icon" 
+                             draggable="false"
+                             oncontextmenu="return false;">
+                    </a>
+                    <a href="https://instagram.com/shy7" target="_blank" class="social-link">
+                        <i class="fa-brands fa-instagram text-3xl"></i>
+                    </a>
+                </div>
+                
+                <div id="discord-section" class="discord-section rounded-2xl p-4 text-sm">
+                    <div class="flex items-center gap-3.5 mb-3">
+                        <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/20" src="https://cdn.discordapp.com/embed/avatars/0.png">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span id="dc-username" class="font-medium truncate">s3lf</span>
+                                <span id="dc-status" class="text-[10px] px-2.5 py-px rounded bg-zinc-500/20 text-zinc-400">Offline</span>
                             </div>
                         </div>
-                        <div id="activity" class="text-white/80 pl-12 leading-tight"></div>
+                    </div>
+                    <div id="activity" class="text-white/70 pl-12 text-[13px]">
+                        Loading activity...
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Volume Button -->
+   
+    <!-- Volume Control -->
     <div id="volume-wrapper" class="absolute bottom-6 right-6 z-20">
-        <button id="volume-btn" class="bg-black/70 hover:bg-black/90 backdrop-blur-md border border-white/10 rounded-3xl p-4 transition-all">
+        <button id="volume-btn" class="bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 rounded-3xl p-4 transition-all active:scale-95">
             <i id="volume-icon" class="fa-solid fa-volume-high text-xl text-white/80"></i>
         </button>
         <div id="volume-slider-container" class="absolute bottom-16 right-0 bg-black/70 backdrop-blur-md border border-white/10 rounded-3xl px-5 py-4 hidden">
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.6" class="accent-zinc-400 w-36 cursor-pointer">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.65" class="accent-white w-36 cursor-pointer">
         </div>
     </div>
 
     <script>
-        // Elements
         const enterScreen = document.getElementById('enter-screen');
         const mainContent = document.getElementById('main-content');
-        const video = document.getElementById('bg-video');
         const card = document.getElementById('card');
-        const container = document.getElementById('card-container');
+        const video = document.getElementById('bg-video');
 
         let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        let currentTiltX = 0;
-        let currentTiltY = 0;
-        let targetTiltX = 0;
-        let targetTiltY = 0;
-        let animationFrame = null;
+        let currentTiltX = 0, currentTiltY = 0;
+        let targetTiltX = 0, targetTiltY = 0;
 
-        // === Tap to Enter ===
+        // Ultra smooth 3D tilt animation
+        function animateTilt() {
+            currentTiltX = currentTiltX * 0.78 + targetTiltX * 0.22;
+            currentTiltY = currentTiltY * 0.78 + targetTiltY * 0.22;
+            card.style.transform = `perspective(1800px) rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg)`;
+            requestAnimationFrame(animateTilt);
+        }
+        animateTilt();
+
+        // Desktop: Smooth hover parallax ONLY when mouse is over the card
+        card.addEventListener('mousemove', (e) => {
+            if (isMobile) return;
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            targetTiltY = x * 26;
+            targetTiltX = -y * 20;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            if (isMobile) return;
+            targetTiltX = 0;
+            targetTiltY = 0;
+        });
+
+        // Mobile: Compass-style motion parallax
+        function handleOrientation(e) {
+            if (!e.beta || !e.gamma) return;
+            let beta = Math.max(Math.min(e.beta, 55), -55);
+            let gamma = Math.max(Math.min(e.gamma, 55), -55);
+            targetTiltX = -beta * 0.82;
+            targetTiltY = gamma * 0.92;
+        }
+
+        async function startMotion() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                try { await DeviceOrientationEvent.requestPermission(); } catch {}
+            }
+            window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+        }
+
+        // Tap to Enter + Play Sound
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
             setTimeout(() => {
                 enterScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 video.classList.remove('hidden');
+                
+                video.volume = 0.65;
                 video.play().catch(() => {});
+                
+                if (isMobile) startMotion();
             }, 600);
         });
 
-        // === Smooth 3D Tilt Animation Loop ===
-        function animateTilt() {
-            currentTiltX = currentTiltX * 0.78 + targetTiltX * 0.22;
-            currentTiltY = currentTiltY * 0.78 + targetTiltY * 0.22;
-            card.style.transform = `
-                perspective(1400px)
-                rotateX(${currentTiltX}deg)
-                rotateY(${currentTiltY}deg)
-            `;
-            animationFrame = requestAnimationFrame(animateTilt);
-        }
-        animateTilt();
-
-        // === Desktop Mouse Tilt ===
-        container.addEventListener('mousemove', (e) => {
-            if (isMobile) return;
-            const rect = container.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            targetTiltY = x * 16;
-            targetTiltX = -y * 12;
-        });
-
-        container.addEventListener('mouseleave', () => {
-            if (isMobile) return;
-            targetTiltX = 0;
-            targetTiltY = 0;
-        });
-
-        // === Enhanced Mobile Device Orientation (Motion Detection) ===
-        function handleOrientation(event) {
-            if (!event.beta || !event.gamma) return;
-
-            // Clamp and smooth the values
-            let tiltX = Math.max(Math.min(event.beta, 50), -50);   // front-back tilt
-            let tiltY = Math.max(Math.min(event.gamma, 50), -50);  // left-right tilt
-
-            // Convert to rotation with better natural feel
-            targetTiltX = -tiltX * 0.55;   // rotateX
-            targetTiltY = tiltY * 0.68;    // rotateY
-        }
-
-        // Request permission and start motion detection
-        async function startMotion() {
-            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                try {
-                    const permission = await DeviceOrientationEvent.requestPermission();
-                    if (permission === 'granted') {
-                        window.addEventListener('deviceorientation', handleOrientation, { passive: true });
-                    }
-                } catch (err) {
-                    console.log("Motion permission denied");
-                }
-            } else {
-                // Android and older browsers
-                window.addEventListener('deviceorientation', handleOrientation, { passive: true });
-            }
-        }
-
-        // Start motion after tap (user gesture)
-        setTimeout(() => {
-            if (isMobile) startMotion();
-        }, 800);
-
-        // === Volume Control ===
+        // Volume Control
         const volumeBtn = document.getElementById('volume-btn');
         const sliderContainer = document.getElementById('volume-slider-container');
         const slider = document.getElementById('volume-slider');
         const volumeIcon = document.getElementById('volume-icon');
-        let hideTimeout;
 
-        volumeBtn.addEventListener('mouseenter', () => {
-            clearTimeout(hideTimeout);
-            sliderContainer.classList.remove('hidden');
-        });
-        volumeBtn.addEventListener('mouseleave', () => {
-            hideTimeout = setTimeout(() => sliderContainer.classList.add('hidden'), 1500);
-        });
+        volumeBtn.addEventListener('click', () => sliderContainer.classList.toggle('hidden'));
 
         slider.addEventListener('input', () => {
             video.volume = parseFloat(slider.value);
@@ -276,44 +255,35 @@
             else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
         });
 
-        // === Discord Status ===
+        // Discord Status
         const discordId = "396352442507198465";
         async function updateDiscord() {
             try {
-                const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`);
+                const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`, { cache: 'no-store' });
                 const json = await res.json();
                 if (!json.success || !json.data) return;
-                const d = json.data;
 
-                const avatarUrl = d.discord_user.avatar
-                    ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}${d.discord_user.avatar.startsWith('a_') ? '.gif' : '.png'}?size=128`
+                const d = json.data;
+                const avatarUrl = d.discord_user.avatar 
+                    ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}.png?size=128`
                     : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
                 document.getElementById('dc-pfp').src = avatarUrl;
                 document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
 
-                let statusText = "Offline";
-                let statusClass = "bg-zinc-500/20 text-zinc-400";
+                let statusText = "Offline", statusClass = "bg-zinc-500/20 text-zinc-400";
                 const status = d.discord_status || "offline";
                 if (status === "online") { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
                 else if (status === "idle") { statusClass = "bg-yellow-500/20 text-yellow-400"; statusText = "Idle"; }
                 else if (status === "dnd") { statusClass = "bg-red-500/20 text-red-400"; statusText = "DND"; }
 
                 const statusEl = document.getElementById('dc-status');
-                statusEl.className = `text-[10px] px-2 py-px rounded ${statusClass}`;
+                statusEl.className = `text-[10px] px-2.5 py-px rounded ${statusClass}`;
                 statusEl.textContent = statusText;
 
-                let html = "No current activity";
+                let html = `<span class="text-xs text-white/60">No current activity</span>`;
                 if (d.spotify) {
-                    html = `
-                        <div class="flex items-center gap-3.5">
-                            <img src="${d.spotify.album_art_url}" class="w-10 h-10 rounded" alt="Album">
-                            <div class="min-w-0 flex-1">
-                                <div class="font-medium text-white truncate">${d.spotify.song}</div>
-                                <div class="text-white/70 text-sm truncate">${d.spotify.artist}</div>
-                            </div>
-                        </div>
-                    `;
+                    html = `<div class="flex items-center gap-3"><img src="${d.spotify.album_art_url}" class="w-10 h-10 rounded-lg flex-shrink-0"><div><div class="font-medium truncate">${d.spotify.song}</div><div class="text-white/70 text-xs">${d.spotify.artist}</div></div></div>`;
                 } else if (d.activities && d.activities.length > 0) {
                     const act = d.activities[0];
                     html = `<strong>${act.name}</strong>`;
@@ -326,7 +296,7 @@
 
         window.onload = () => {
             updateDiscord();
-            setInterval(updateDiscord, 12000);
+            setInterval(updateDiscord, 15000);
         };
     </script>
 </body>
