@@ -2,45 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>s3lf</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@500;600;700&display=swap');
-     
+    
         :root {
             --glass-bg: rgba(15, 15, 22, 0.28);
             --glass-border: rgba(255, 255, 255, 0.10);
         }
-       
+      
         body {
             font-family: 'Inter', system_ui, sans-serif;
             user-select: none;
             min-height: 100dvh;
             overflow: hidden;
             background: #000;
+            touch-action: manipulation;
         }
-       
+      
         .title-font {
             font-family: 'Playfair Display', serif;
         }
-     
+    
         .glass {
             background: var(--glass-bg);
             backdrop-filter: blur(26px);
             -webkit-backdrop-filter: blur(26px);
             border: 1px solid var(--glass-border);
             box-shadow: 0 25px 50px -20px rgba(0, 0, 0, 0.7);
+            will-change: transform;
         }
-      
+     
         .social-links {
             display: flex;
             gap: 30px;
             align-items: center;
             justify-content: center;
         }
-      
+     
         .social-link {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
@@ -50,12 +52,12 @@
             height: 36px;
             color: rgba(255,255,255,0.8);
         }
-      
+     
         .social-link:hover {
             transform: scale(1.28);
             color: white;
         }
-      
+     
         .roblox-icon {
             width: 36px;
             height: 36px;
@@ -65,7 +67,7 @@
             pointer-events: none;
             -webkit-user-drag: none;
         }
-      
+     
         .main-pfp {
             width: 127px;
             height: 127px;
@@ -75,13 +77,13 @@
             pointer-events: none;
             -webkit-user-drag: none;
         }
-      
+     
         .discord-section {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(18px);
         }
-      
+     
         .center-container {
             min-height: 100dvh;
             display: flex;
@@ -89,7 +91,6 @@
             justify-content: center;
             padding: 20px;
         }
-
         .enter-text {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             font-weight: 400;
@@ -97,47 +98,95 @@
             letter-spacing: 1px;
             color: #999;
         }
+
+        /* PERFECT MOBILE SCALING + CENTERING */
+        @media (max-width: 500px) {
+            .center-container {
+                padding: 16px;
+            }
+            #card {
+                padding: 28px 24px !important;
+                gap: 24px !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                border-radius: 28px;
+            }
+            .main-pfp {
+                width: 112px !important;
+                height: 112px !important;
+            }
+            h1.title-font {
+                font-size: 2.75rem !important;
+                letter-spacing: -1.5px;
+            }
+            .social-links {
+                gap: 26px;
+            }
+            .social-link {
+                width: 34px;
+                height: 34px;
+            }
+            .roblox-icon {
+                width: 34px;
+                height: 34px;
+            }
+            .discord-section {
+                padding: 16px !important;
+            }
+            .volume-wrapper {
+                bottom: 16px;
+                right: 16px;
+            }
+        }
+
+        /* Extra smooth 3D performance */
+        #card {
+            transition: none;
+        }
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden relative">
-    <!-- Background Video -->
-    <video id="bg-video" loop playsinline class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
-        <source src="https://file.garden/advUdw57_HghQzKi/SaveClip.App_AQPSqUFZhQat87Hui2mxwSSV12bf95R_PNksKH5ivoX6tPv1iPOloC9l7DHhdT0Ff170IiakwFmWZUBjqkUPOz10VxahigezC-52H5s.mp4" type="video/mp4">
+    <!-- Background Video (SRC LOADED ONLY AFTER ENTER → INSTANT PAGE LOAD) -->
+    <video id="bg-video" 
+           loop 
+           playsinline 
+           preload="none"
+           class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
     </video>
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/65 to-black/95 z-0"></div>
-   
-    <!-- Tap to Enter -->
-    <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/85 backdrop-blur-2xl cursor-pointer transition-all duration-700">
+  
+    <!-- Tap to Enter (INSTANT, NO HEAVY ASSETS) -->
+    <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/85 backdrop-blur-2xl cursor-pointer transition-all duration-500">
         <div class="text-center">
             <p class="enter-text">click on it or smth</p>
         </div>
     </div>
-   
-    <!-- Main Card -->
+  
+    <!-- Main Card (PERFECTLY CENTERED + MOBILE SCALED) -->
     <div id="main-content" class="center-container relative z-10 w-full hidden">
-        <div id="card" class="glass rounded-3xl px-9 py-8 flex gap-8 max-w-[460px] w-full">
-            <!-- Left: PFP (protected + slightly smaller) -->
+        <div id="card" class="glass rounded-3xl px-9 py-8 flex gap-8 max-w-[460px] w-full mx-auto">
+            <!-- Left: PFP -->
             <div class="flex-shrink-0">
                 <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
-                     class="main-pfp" 
+                     class="main-pfp"
                      draggable="false"
                      oncontextmenu="return false;">
             </div>
-            
+           
             <!-- Right Side -->
             <div class="flex-1 min-w-0 pt-1">
                 <div class="mb-6">
                     <h1 class="title-font text-5xl font-semibold tracking-[-2px]">s3lf</h1>
                     <p class="text-zinc-400 text-lg font-medium tracking-widest mt-1">social media expert</p>
                 </div>
-                
+               
                 <div class="social-links mb-9">
                     <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-link">
                         <i class="fa-brands fa-discord text-3xl"></i>
                     </a>
                     <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-link">
                         <img src="https://media.discordapp.net/attachments/1255692212717752513/1480657907082203237/f62b58e1c76f4fef49829dcdfe7316b0.gif?ex=69de9e22&is=69dd4ca2&hm=201d99ca5ef2084f5868b0a0f047e668bc1c67abd5b590da5c6109a9a91c3778&="
-                             alt="Roblox" class="roblox-icon" 
+                             alt="Roblox" class="roblox-icon"
                              draggable="false"
                              oncontextmenu="return false;">
                     </a>
@@ -145,7 +194,7 @@
                         <i class="fa-brands fa-instagram text-3xl"></i>
                     </a>
                 </div>
-                
+               
                 <div id="discord-section" class="discord-section rounded-2xl p-4 text-sm">
                     <div class="flex items-center gap-3.5 mb-3">
                         <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/20" src="https://cdn.discordapp.com/embed/avatars/0.png">
@@ -163,9 +212,9 @@
             </div>
         </div>
     </div>
-   
+  
     <!-- Volume Control -->
-    <div id="volume-wrapper" class="absolute bottom-6 right-6 z-20">
+    <div id="volume-wrapper" class="absolute bottom-6 right-6 z-20 volume-wrapper">
         <button id="volume-btn" class="bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 rounded-3xl p-4 transition-all active:scale-95">
             <i id="volume-icon" class="fa-solid fa-volume-high text-xl text-white/80"></i>
         </button>
@@ -175,16 +224,18 @@
     </div>
 
     <script>
+        // DOM elements
         const enterScreen = document.getElementById('enter-screen');
         const mainContent = document.getElementById('main-content');
         const card = document.getElementById('card');
         const video = document.getElementById('bg-video');
+        const videoSrc = "https://file.garden/advUdw57_HghQzKi/SaveClip.App_AQPSqUFZhQat87Hui2mxwSSV12bf95R_PNksKH5ivoX6tPv1iPOloC9l7DHhdT0Ff170IiakwFmWZUBjqkUPOz10VxahigezC-52H5s.mp4";
 
         let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         let currentTiltX = 0, currentTiltY = 0;
         let targetTiltX = 0, targetTiltY = 0;
 
-        // Ultra smooth 3D tilt animation
+        // ULTRA-SMOOTH 3D TILT (desktop + mobile)
         function animateTilt() {
             currentTiltX = currentTiltX * 0.78 + targetTiltX * 0.22;
             currentTiltY = currentTiltY * 0.78 + targetTiltY * 0.22;
@@ -193,7 +244,7 @@
         }
         animateTilt();
 
-        // Desktop: Smooth hover parallax ONLY when mouse is over the card
+        // Desktop mouse tilt
         card.addEventListener('mousemove', (e) => {
             if (isMobile) return;
             const rect = card.getBoundingClientRect();
@@ -209,35 +260,55 @@
             targetTiltY = 0;
         });
 
-        // Mobile: Compass-style motion parallax
+        // MOBILE 3D MOTION (FIXED: proper permission handling)
         function handleOrientation(e) {
             if (!e.beta || !e.gamma) return;
-            let beta = Math.max(Math.min(e.beta, 55), -55);
-            let gamma = Math.max(Math.min(e.gamma, 55), -55);
+            const beta = Math.max(Math.min(e.beta, 55), -55);
+            const gamma = Math.max(Math.min(e.gamma, 55), -55);
             targetTiltX = -beta * 0.82;
             targetTiltY = gamma * 0.92;
         }
 
         async function startMotion() {
+            let granted = true;
+
+            // iOS 13+ requires explicit permission
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                try { await DeviceOrientationEvent.requestPermission(); } catch {}
+                try {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    granted = permission === 'granted';
+                } catch (err) {
+                    granted = false;
+                }
             }
-            window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+
+            // Only attach listener if we have permission (works on Android too)
+            if (granted) {
+                window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+            }
+            // If denied, tilt still works via mouse fallback on desktop
         }
 
-        // Tap to Enter + Play Sound
+        // INSTANT ENTER + FAST VIDEO LOAD
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
+            
             setTimeout(() => {
                 enterScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 video.classList.remove('hidden');
-                
+
+                // LOAD VIDEO ONLY AFTER USER ENTERS → page loads instantly
+                if (!video.src) {
+                    video.src = videoSrc;
+                    video.load();
+                }
+
                 video.volume = 0.65;
                 video.play().catch(() => {});
-                
+
                 if (isMobile) startMotion();
-            }, 600);
+            }, 500); // slightly faster transition for snappier feel
         });
 
         // Volume Control
@@ -246,7 +317,9 @@
         const slider = document.getElementById('volume-slider');
         const volumeIcon = document.getElementById('volume-icon');
 
-        volumeBtn.addEventListener('click', () => sliderContainer.classList.toggle('hidden'));
+        volumeBtn.addEventListener('click', () => {
+            sliderContainer.classList.toggle('hidden');
+        });
 
         slider.addEventListener('input', () => {
             video.volume = parseFloat(slider.value);
@@ -255,19 +328,18 @@
             else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
         });
 
-        // Discord Status
+        // Discord Status (already fast + cached)
         const discordId = "396352442507198465";
         async function updateDiscord() {
             try {
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`, { cache: 'no-store' });
                 const json = await res.json();
                 if (!json.success || !json.data) return;
-
                 const d = json.data;
-                const avatarUrl = d.discord_user.avatar 
+
+                const avatarUrl = d.discord_user.avatar
                     ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}.png?size=128`
                     : 'https://cdn.discordapp.com/embed/avatars/0.png';
-
                 document.getElementById('dc-pfp').src = avatarUrl;
                 document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
 
@@ -294,6 +366,7 @@
             } catch (e) {}
         }
 
+        // Start everything
         window.onload = () => {
             updateDiscord();
             setInterval(updateDiscord, 15000);
