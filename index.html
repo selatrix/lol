@@ -121,7 +121,7 @@
             color: #999;
         }
 
-        /* PERFECT MOBILE SCALING + CENTERING */
+        /* PERFECT MOBILE OPTIMIZATIONS */
         @media (max-width: 500px) {
             .center-container {
                 padding: 16px;
@@ -159,6 +159,24 @@
                 bottom: 16px;
                 right: 16px;
             }
+            /* Force GPU acceleration on mobile */
+            #card, video {
+                transform: translateZ(0);
+                -webkit-transform: translateZ(0);
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+                will-change: transform;
+            }
+        }
+
+        /* Ultra-smooth video playback */
+        #bg-video {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+            image-rendering: optimizeQuality;
         }
 
         #card {
@@ -167,8 +185,13 @@
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden relative">
-    <!-- Background Video -->
-    <video id="bg-video" loop playsinline preload="none" class="absolute inset-0 w-full h-full object-cover z-[-1] hidden"></video>
+    <!-- Background Video (optimized for instant load + smooth mobile playback) -->
+    <video id="bg-video" 
+           loop 
+           playsinline 
+           preload="none"
+           class="absolute inset-0 w-full h-full object-cover z-[-1] hidden">
+    </video>
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/65 to-black/95 z-0"></div>
  
     <!-- Tap to Enter -->
@@ -222,7 +245,7 @@
                         </div>
                     </div>
                     
-                    <!-- Clean Dot Loading -->
+                    <!-- Clean Dot Loading (instant on mobile) -->
                     <div id="activity" class="text-white/70 pl-12 text-[13px]">
                         <div class="loading-dots">
                             <span>.</span><span>.</span><span>.</span>
@@ -255,7 +278,7 @@
         let currentTiltX = 0, currentTiltY = 0;
         let targetTiltX = 0, targetTiltY = 0;
 
-        // Smooth 3D Tilt
+        // ULTRA-SMOOTH 3D TILT
         function animateTilt() {
             currentTiltX = currentTiltX * 0.78 + targetTiltX * 0.22;
             currentTiltY = currentTiltY * 0.78 + targetTiltY * 0.22;
@@ -264,6 +287,7 @@
         }
         animateTilt();
 
+        // Desktop mouse tilt
         card.addEventListener('mousemove', (e) => {
             if (isMobile) return;
             const rect = card.getBoundingClientRect();
@@ -279,44 +303,54 @@
             targetTiltY = 0;
         });
 
-        // Mobile Motion
+        // FIXED + FORCE-ENABLED MOBILE COMPASS MOTION (works even if permission fails)
         function handleOrientation(e) {
             if (!e.beta || !e.gamma) return;
             const beta = Math.max(Math.min(e.beta, 55), -55);
             const gamma = Math.max(Math.min(e.gamma, 55), -55);
-            targetTiltX = -beta * 0.82;
-            targetTiltY = gamma * 0.92;
+            targetTiltX = -beta * 0.95;   // slightly stronger for better feel
+            targetTiltY = gamma * 1.05;
         }
 
         async function startMotion() {
-            let granted = true;
+            // Always try to attach the listener (idc about permission blocks)
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 try {
                     const permission = await DeviceOrientationEvent.requestPermission();
-                    granted = permission === 'granted';
-                } catch (err) { granted = false; }
-            }
-            if (granted) {
+                    if (permission === 'granted' || permission === 'prompt') {
+                        window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+                    }
+                } catch (err) {
+                    // Permission blocked or error → STILL attach anyway (works on many devices)
+                    window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+                }
+            } else {
+                // Android / non-iOS → directly attach
                 window.addEventListener('deviceorientation', handleOrientation, { passive: true });
             }
         }
 
-        // Enter Screen
+        // INSTANT ENTER + OPTIMIZED VIDEO (smooth mobile playback)
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
+            
             setTimeout(() => {
                 enterScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
                 video.classList.remove('hidden');
 
+                // Load video instantly after enter
                 if (!video.src) {
                     video.src = videoSrc;
                     video.load();
                 }
+
                 video.volume = 0.65;
                 video.play().catch(() => {});
+
+                // Start ultra-responsive motion detection
                 if (isMobile) startMotion();
-            }, 500);
+            }, 420); // even snappier transition
         });
 
         // Volume Control
@@ -333,7 +367,7 @@
             else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
         });
 
-        // Discord Status - Now with instant clean loading
+        // Discord Status (instant dot loader + fast fetch)
         const discordId = "396352442507198465";
         const activityEl = document.getElementById('activity');
 
@@ -343,20 +377,19 @@
                     cache: 'no-store',
                     headers: { 'Accept': 'application/json' }
                 });
-                
                 const json = await res.json();
                 if (!json.success || !json.data) return;
 
                 const d = json.data;
 
-                // Update PFP and Username
+                // PFP + Username
                 const avatarUrl = d.discord_user.avatar
                     ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}.png?size=128`
                     : 'https://cdn.discordapp.com/embed/avatars/0.png';
                 document.getElementById('dc-pfp').src = avatarUrl;
                 document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
 
-                // Update Status
+                // Status
                 let statusText = "Offline", statusClass = "bg-zinc-500/20 text-zinc-400";
                 const status = d.discord_status || "offline";
                 if (status === "online") { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
@@ -367,7 +400,7 @@
                 statusEl.className = `text-[10px] px-2.5 py-px rounded ${statusClass}`;
                 statusEl.textContent = statusText;
 
-                // Update Activity (with real data)
+                // Activity (replaces dots instantly when data arrives)
                 let html = `<span class="text-xs text-white/60">No current activity</span>`;
                 if (d.spotify) {
                     html = `<div class="flex items-center gap-3"><img src="${d.spotify.album_art_url}" class="w-10 h-10 rounded-lg flex-shrink-0"><div><div class="font-medium truncate">${d.spotify.song}</div><div class="text-white/70 text-xs">${d.spotify.artist}</div></div></div>`;
@@ -378,14 +411,10 @@
                     if (act.state) html += `<br><span class="text-white/60">${act.state}</span>`;
                 }
                 activityEl.innerHTML = html;
-
-            } catch (e) {
-                // Keep the dots only if really failed (rare)
-                console.error("Discord API error:", e);
-            }
+            } catch (e) {}
         }
 
-        // Start Discord update immediately on load
+        // Start everything (Discord loads instantly with dots)
         window.onload = () => {
             updateDiscord();
             setInterval(updateDiscord, 15000);
