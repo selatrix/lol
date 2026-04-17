@@ -8,12 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@500;600;700&display=swap');
-
         :root {
             --glass-bg: rgba(15, 15, 22, 0.28);
             --glass-border: rgba(255, 255, 255, 0.10);
         }
-   
+  
         body {
             font-family: 'Inter', system_ui, sans-serif;
             user-select: none;
@@ -22,11 +21,10 @@
             background: #000;
             touch-action: none;
         }
-   
+  
         .title-font {
             font-family: 'Playfair Display', serif;
         }
-
         .glass {
             background: var(--glass-bg);
             backdrop-filter: blur(26px);
@@ -35,14 +33,14 @@
             box-shadow: 0 25px 50px -20px rgba(0, 0, 0, 0.7);
             transition: transform 0.05s linear;
         }
-  
+ 
         .social-links {
             display: flex;
             gap: 30px;
             align-items: center;
             justify-content: center;
         }
-  
+ 
         .social-link {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
@@ -52,12 +50,12 @@
             height: 36px;
             color: rgba(255,255,255,0.8);
         }
-  
+ 
         .social-link:hover {
             transform: scale(1.28);
             color: white;
         }
-  
+ 
         .roblox-icon {
             width: 36px;
             height: 36px;
@@ -70,7 +68,7 @@
             will-change: transform;
             transform: translateZ(0);
         }
-  
+ 
         .main-pfp {
             width: 127px;
             height: 127px;
@@ -80,7 +78,7 @@
             pointer-events: none;
             -webkit-user-drag: none;
         }
-   
+  
         .discord-section {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -132,6 +130,42 @@
             opacity: 1;
             transform: scale(1);
         }
+
+        /* FIX FOR LONG SONG/ARTIST NAMES */
+        .activity-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .activity-content img {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .activity-text {
+            flex: 1;
+            min-width: 0; /* This is the key fix */
+            overflow: hidden;
+        }
+        .activity-text .song {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+        .activity-text .artist {
+            font-size: 12px;
+            color: rgb(212 212 216);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-black text-white overflow-hidden relative" oncontextmenu="showMadeBy(event); return false;">
@@ -151,13 +185,13 @@
                 <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
                      class="main-pfp" draggable="false">
             </div>
-        
+       
             <div class="flex-1 min-w-0 pt-1">
                 <div class="mb-6">
                     <h1 class="title-font text-5xl font-semibold tracking-[-2px]">s3lf</h1>
                     <p class="text-zinc-400 text-lg font-medium tracking-widest mt-1">social media expert</p>
                 </div>
-            
+           
                 <div class="social-links mb-9">
                     <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-link">
                         <i class="fa-brands fa-discord text-3xl"></i>
@@ -176,7 +210,7 @@
                         <i class="fa-brands fa-instagram text-3xl"></i>
                     </a>
                 </div>
-            
+           
                 <div id="discord-section" class="discord-section rounded-2xl p-4 text-sm">
                     <div class="flex items-center gap-3.5 mb-3">
                         <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/20" src="https://cdn.discordapp.com/embed/avatars/0.png">
@@ -188,9 +222,7 @@
                         </div>
                     </div>
                     <div id="activity" class="text-white/70 pl-12 text-[13px]">
-                        <div class="loading-dots">
-                            <span>.</span><span>.</span><span>.</span>
-                        </div>
+                        <!-- Will be filled by JS -->
                     </div>
                 </div>
             </div>
@@ -222,7 +254,7 @@
             if (top + 50 > window.innerHeight) top = e.clientY - 50;
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
-           
+          
             popup.classList.add('show');
             popupTimeout = setTimeout(() => {
                 popup.classList.remove('show');
@@ -238,12 +270,11 @@
         });
         document.addEventListener('touchend', () => clearTimeout(longPressTimer));
 
-        // 3D Tilt Effect
+        // 3D Tilt Effect (unchanged)
         const card = document.getElementById('card');
         let currentTiltX = 0, currentTiltY = 0;
         let targetTiltX = 0, targetTiltY = 0;
         let isDragging = false;
-
         function animateTilt() {
             currentTiltX = currentTiltX * 0.82 + targetTiltX * 0.18;
             currentTiltY = currentTiltY * 0.82 + targetTiltY * 0.18;
@@ -252,7 +283,6 @@
         }
         animateTilt();
 
-        // Desktop
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -265,10 +295,7 @@
             targetTiltY = 0;
         });
 
-        // Mobile Drag
-        card.addEventListener('touchstart', (e) => {
-            isDragging = true;
-        }, { passive: true });
+        card.addEventListener('touchstart', (e) => { isDragging = true; }, { passive: true });
         card.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             const touch = e.touches[0];
@@ -304,12 +331,11 @@
             }, 420);
         });
 
-        // Volume Control
+        // Volume Control (unchanged)
         const volumeBtn = document.getElementById('volume-btn');
         const sliderContainer = document.getElementById('volume-slider-container');
         const slider = document.getElementById('volume-slider');
         const volumeIcon = document.getElementById('volume-icon');
-
         volumeBtn.addEventListener('click', () => sliderContainer.classList.toggle('hidden'));
         slider.addEventListener('input', () => {
             video.volume = parseFloat(slider.value);
@@ -318,7 +344,7 @@
             else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
         });
 
-        // Discord Status
+        // Discord Status + Activity (updated for truncation)
         const discordId = "396352442507198465";
         const activityEl = document.getElementById('activity');
 
@@ -329,13 +355,16 @@
                 if (!json.success || !json.data) return;
 
                 const d = json.data;
+
+                // Avatar & Username
                 const avatarUrl = d.discord_user.avatar
                     ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}.png?size=128`
                     : 'https://cdn.discordapp.com/embed/avatars/0.png';
-               
+              
                 document.getElementById('dc-pfp').src = avatarUrl;
                 document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
 
+                // Status
                 let statusText = "Offline", statusClass = "bg-zinc-500/20 text-zinc-400";
                 const status = d.discord_status || "offline";
                 if (status === "online") { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
@@ -346,15 +375,26 @@
                 statusEl.className = `text-[10px] px-2.5 py-px rounded ${statusClass}`;
                 statusEl.textContent = statusText;
 
+                // Activity / Spotify
                 let html = `<span class="text-xs text-white/60">No current activity</span>`;
+
                 if (d.spotify) {
-                    html = `<div class="flex items-center gap-3"><img src="${d.spotify.album_art_url}" class="w-10 h-10 rounded-lg flex-shrink-0"><div><div class="font-medium truncate">${d.spotify.song}</div><div class="text-white/70 text-xs">${d.spotify.artist}</div></div></div>`;
+                    html = `
+                        <div class="activity-content">
+                            <img src="${d.spotify.album_art_url}" alt="album">
+                            <div class="activity-text">
+                                <div class="song">${d.spotify.song}</div>
+                                <div class="artist">${d.spotify.artist}</div>
+                            </div>
+                        </div>
+                    `;
                 } else if (d.activities && d.activities.length > 0) {
                     const act = d.activities[0];
                     html = `<strong>${act.name}</strong>`;
                     if (act.details) html += `<br><span class="text-white/70">${act.details}</span>`;
                     if (act.state) html += `<br><span class="text-white/60">${act.state}</span>`;
                 }
+
                 activityEl.innerHTML = html;
             } catch (e) {}
         }
