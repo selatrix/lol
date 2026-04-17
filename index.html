@@ -12,7 +12,7 @@
             --glass-bg: rgba(15, 15, 22, 0.28);
             --glass-border: rgba(255, 255, 255, 0.10);
         }
-  
+ 
         body {
             font-family: 'Inter', system_ui, sans-serif;
             user-select: none;
@@ -21,7 +21,7 @@
             background: #000;
             touch-action: none;
         }
-  
+ 
         .title-font {
             font-family: 'Playfair Display', serif;
         }
@@ -33,32 +33,28 @@
             box-shadow: 0 25px 50px -20px rgba(0, 0, 0, 0.7);
             transition: transform 0.05s linear;
         }
- 
         .social-links {
             display: flex;
-            gap: 30px;
+            gap: 32px;
             align-items: center;
             justify-content: center;
         }
- 
         .social-link {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             color: rgba(255,255,255,0.8);
         }
- 
         .social-link:hover {
-            transform: scale(1.28);
+            transform: scale(1.25);
             color: white;
         }
- 
         .roblox-icon {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
             border-radius: 8px;
             filter: brightness(1.12);
@@ -68,7 +64,6 @@
             will-change: transform;
             transform: translateZ(0);
         }
- 
         .main-pfp {
             width: 127px;
             height: 127px;
@@ -78,7 +73,7 @@
             pointer-events: none;
             -webkit-user-drag: none;
         }
-  
+ 
         .discord-section {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -108,7 +103,8 @@
             justify-content: center;
             padding: 20px;
         }
-        /* Right Click Popup - Improved Precision */
+
+        /* Right Click Popup */
         #made-by-popup {
             position: fixed;
             background: rgba(0, 0, 0, 0.9);
@@ -148,7 +144,7 @@
         }
         .activity-text {
             flex: 1;
-            min-width: 0; /* This is the key fix */
+            min-width: 0;
             overflow: hidden;
         }
         .activity-text .song {
@@ -166,18 +162,38 @@
             text-overflow: ellipsis;
             display: block;
         }
+
+        /* Mobile Optimization for Icons */
+        @media (max-width: 480px) {
+            .social-links {
+                gap: 28px;
+            }
+            .social-link {
+                width: 38px;
+                height: 38px;
+            }
+            .roblox-icon {
+                width: 38px;
+                height: 38px;
+            }
+            .social-link i {
+                font-size: 28px;
+            }
+        }
     </style>
 </head>
-<body class="bg-black text-white overflow-hidden relative" oncontextmenu="showMadeBy(event); return false;">
+<body class="bg-black text-white overflow-hidden relative" oncontextmenu="return false;">
     <!-- Background Video -->
     <video id="bg-video" loop playsinline preload="none" class="absolute inset-0 w-full h-full object-cover z-[-1] hidden"></video>
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/65 to-black/95 z-0"></div>
+    
     <!-- Tap to Enter -->
     <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/85 backdrop-blur-2xl cursor-pointer transition-all duration-500">
         <div class="text-center">
             <p class="enter-text">click on it or smth</p>
         </div>
     </div>
+
     <!-- Main Card -->
     <div id="main-content" class="center-container relative z-10 w-full hidden">
         <div id="card" class="glass rounded-3xl px-9 py-8 flex gap-8 max-w-[460px] w-full mx-auto">
@@ -185,13 +201,13 @@
                 <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
                      class="main-pfp" draggable="false">
             </div>
-       
+      
             <div class="flex-1 min-w-0 pt-1">
                 <div class="mb-6">
                     <h1 class="title-font text-5xl font-semibold tracking-[-2px]">s3lf</h1>
                     <p class="text-zinc-400 text-lg font-medium tracking-widest mt-1">social media expert</p>
                 </div>
-           
+          
                 <div class="social-links mb-9">
                     <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-link">
                         <i class="fa-brands fa-discord text-3xl"></i>
@@ -210,7 +226,7 @@
                         <i class="fa-brands fa-instagram text-3xl"></i>
                     </a>
                 </div>
-           
+          
                 <div id="discord-section" class="discord-section rounded-2xl p-4 text-sm">
                     <div class="flex items-center gap-3.5 mb-3">
                         <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/20" src="https://cdn.discordapp.com/embed/avatars/0.png">
@@ -228,10 +244,12 @@
             </div>
         </div>
     </div>
-    <!-- Right Click Popup -->
+
+    <!-- Right Click Popup (kept but disabled on mobile) -->
     <div id="made-by-popup">
         made by <span class="font-medium text-white/80">s3lf</span>
     </div>
+
     <!-- Volume Control -->
     <div id="volume-wrapper" class="absolute bottom-6 right-6 z-20">
         <button id="volume-btn" class="bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 rounded-3xl p-4 transition-all active:scale-95">
@@ -243,10 +261,14 @@
     </div>
 
     <script>
-        // === Precise Right Click Popup ===
+        // === Right Click Popup - DISABLED ON MOBILE ===
         const popup = document.getElementById('made-by-popup');
         let popupTimeout;
+
         function showMadeBy(e) {
+            // Only show on desktop (larger screens)
+            if (window.innerWidth <= 768) return;
+            
             clearTimeout(popupTimeout);
             let left = e.clientX + 12;
             let top = e.clientY + 12;
@@ -254,27 +276,27 @@
             if (top + 50 > window.innerHeight) top = e.clientY - 50;
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
-          
+         
             popup.classList.add('show');
             popupTimeout = setTimeout(() => {
                 popup.classList.remove('show');
             }, 2400);
         }
-        // Touch support for mobile right-click simulation (long press)
-        let longPressTimer;
-        document.addEventListener('touchstart', (e) => {
-            longPressTimer = setTimeout(() => {
-                const touch = e.touches[0];
-                showMadeBy({ clientX: touch.clientX, clientY: touch.clientY });
-            }, 650);
-        });
-        document.addEventListener('touchend', () => clearTimeout(longPressTimer));
 
-        // 3D Tilt Effect (unchanged)
+        // Desktop only right-click
+        document.addEventListener('contextmenu', (e) => {
+            if (window.innerWidth > 768) {
+                showMadeBy(e);
+                e.preventDefault();
+            }
+        });
+
+        // 3D Tilt Effect
         const card = document.getElementById('card');
         let currentTiltX = 0, currentTiltY = 0;
         let targetTiltX = 0, targetTiltY = 0;
         let isDragging = false;
+
         function animateTilt() {
             currentTiltX = currentTiltX * 0.82 + targetTiltX * 0.18;
             currentTiltY = currentTiltY * 0.82 + targetTiltY * 0.18;
@@ -295,6 +317,7 @@
             targetTiltY = 0;
         });
 
+        // Touch support for tilt (kept)
         card.addEventListener('touchstart', (e) => { isDragging = true; }, { passive: true });
         card.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
@@ -331,11 +354,12 @@
             }, 420);
         });
 
-        // Volume Control (unchanged)
+        // Volume Control
         const volumeBtn = document.getElementById('volume-btn');
         const sliderContainer = document.getElementById('volume-slider-container');
         const slider = document.getElementById('volume-slider');
         const volumeIcon = document.getElementById('volume-icon');
+
         volumeBtn.addEventListener('click', () => sliderContainer.classList.toggle('hidden'));
         slider.addEventListener('input', () => {
             video.volume = parseFloat(slider.value);
@@ -344,7 +368,7 @@
             else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
         });
 
-        // Discord Status + Activity (updated for truncation)
+        // Discord Status + Activity
         const discordId = "396352442507198465";
         const activityEl = document.getElementById('activity');
 
@@ -353,18 +377,15 @@
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`, { cache: 'no-store' });
                 const json = await res.json();
                 if (!json.success || !json.data) return;
-
                 const d = json.data;
 
-                // Avatar & Username
                 const avatarUrl = d.discord_user.avatar
                     ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}.png?size=128`
                     : 'https://cdn.discordapp.com/embed/avatars/0.png';
-              
+             
                 document.getElementById('dc-pfp').src = avatarUrl;
                 document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
 
-                // Status
                 let statusText = "Offline", statusClass = "bg-zinc-500/20 text-zinc-400";
                 const status = d.discord_status || "offline";
                 if (status === "online") { statusClass = "bg-emerald-500/20 text-emerald-400"; statusText = "Online"; }
@@ -375,9 +396,7 @@
                 statusEl.className = `text-[10px] px-2.5 py-px rounded ${statusClass}`;
                 statusEl.textContent = statusText;
 
-                // Activity / Spotify
                 let html = `<span class="text-xs text-white/60">No current activity</span>`;
-
                 if (d.spotify) {
                     html = `
                         <div class="activity-content">
@@ -394,7 +413,6 @@
                     if (act.details) html += `<br><span class="text-white/70">${act.details}</span>`;
                     if (act.state) html += `<br><span class="text-white/60">${act.state}</span>`;
                 }
-
                 activityEl.innerHTML = html;
             } catch (e) {}
         }
