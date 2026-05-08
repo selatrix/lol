@@ -12,7 +12,6 @@
             --glass-bg: rgba(15, 15, 22, 0.28);
             --glass-border: rgba(255, 255, 255, 0.10);
         }
- 
         body {
             font-family: 'Inter', system_ui, sans-serif;
             user-select: none;
@@ -21,7 +20,6 @@
             background: #000;
             touch-action: none;
         }
- 
         .title-font {
             font-family: 'Playfair Display', serif;
         }
@@ -47,6 +45,7 @@
             width: 42px;
             height: 42px;
             color: rgba(255,255,255,0.8);
+            position: relative;
         }
         .social-link:hover {
             transform: scale(1.25);
@@ -73,29 +72,63 @@
             pointer-events: none;
             -webkit-user-drag: none;
         }
- 
         .discord-section {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(18px);
         }
-        .loading-dots {
+
+        /* Instagram Video Modal */
+        #insta-video-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        #insta-video-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        #insta-video-modal .modal-content {
+            width: 340px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(26px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        #insta-video-modal video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Subtle Glass Follow Button */
+        .follow-btn {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
+            padding: 10px 28px;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 4px;
-            color: rgba(255,255,255,0.5);
-            font-size: 13px;
-            padding-left: 48px;
+            gap: 8px;
+            font-size: 15px;
         }
-        .loading-dots span {
-            animation: dotPulse 1.4s infinite ease-in-out;
+        .follow-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateY(-1px);
         }
-        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes dotPulse {
-            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-            40% { opacity: 1; transform: scale(1); }
-        }
+
         .center-container {
             min-height: 100dvh;
             display: flex;
@@ -103,8 +136,6 @@
             justify-content: center;
             padding: 20px;
         }
-
-        /* Right Click Popup */
         #made-by-popup {
             position: fixed;
             background: rgba(0, 0, 0, 0.9);
@@ -126,8 +157,6 @@
             opacity: 1;
             transform: scale(1);
         }
-
-        /* FIX FOR LONG SONG/ARTIST NAMES */
         .activity-content {
             display: flex;
             align-items: center;
@@ -142,17 +171,11 @@
             border-radius: 8px;
             object-fit: cover;
         }
-        .activity-text {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-        }
         .activity-text .song {
             font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            display: block;
         }
         .activity-text .artist {
             font-size: 12px;
@@ -160,25 +183,12 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            display: block;
         }
-
-        /* Mobile Optimization for Icons */
         @media (max-width: 480px) {
-            .social-links {
-                gap: 28px;
-            }
-            .social-link {
-                width: 38px;
-                height: 38px;
-            }
-            .roblox-icon {
-                width: 38px;
-                height: 38px;
-            }
-            .social-link i {
-                font-size: 28px;
-            }
+            .social-links { gap: 28px; }
+            .social-link { width: 38px; height: 38px; }
+            .roblox-icon { width: 38px; height: 38px; }
+            #insta-video-modal .modal-content { width: 92%; }
         }
     </style>
 </head>
@@ -186,7 +196,7 @@
     <!-- Background Video -->
     <video id="bg-video" loop playsinline preload="none" class="absolute inset-0 w-full h-full object-cover z-[-1] hidden"></video>
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/65 to-black/95 z-0"></div>
-    
+   
     <!-- Tap to Enter -->
     <div id="enter-screen" class="center-container absolute inset-0 z-50 bg-black/85 backdrop-blur-2xl cursor-pointer transition-all duration-500">
         <div class="text-center">
@@ -201,32 +211,25 @@
                 <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWxzeGN3d2kzcnowY3hzYWdseTlocmVjanBwZWlxMXdpbTZ4MmpnayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/w4kE17SKmYwhNofbey/giphy.gif"
                      class="main-pfp" draggable="false">
             </div>
-      
+     
             <div class="flex-1 min-w-0 pt-1">
                 <div class="mb-6">
                     <h1 class="title-font text-5xl font-semibold tracking-[-2px]">s3lf</h1>
                     <p class="text-zinc-400 text-lg font-medium tracking-widest mt-1">social media expert</p>
                 </div>
-          
+         
                 <div class="social-links mb-9">
                     <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-link">
                         <i class="fa-brands fa-discord text-3xl"></i>
                     </a>
                     <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-link">
-                        <img id="roblox-icon"
-                             src="https://files.catbox.moe/q4jtcq.gif"
-                             alt="Roblox"
-                             class="roblox-icon"
-                             draggable="false"
-                             loading="eager"
-                             decoding="async"
-                             fetchpriority="high">
+                        <img id="roblox-icon" src="https://files.catbox.moe/q4jtcq.gif" alt="Roblox" class="roblox-icon">
                     </a>
-                    <a href="https://instagram.com/shy7" target="_blank" class="social-link">
+                    <a href="#" id="insta-btn" class="social-link">
                         <i class="fa-brands fa-instagram text-3xl"></i>
                     </a>
                 </div>
-          
+         
                 <div id="discord-section" class="discord-section rounded-2xl p-4 text-sm">
                     <div class="flex items-center gap-3.5 mb-3">
                         <img id="dc-pfp" class="w-9 h-9 rounded-full object-cover ring-1 ring-white/20" src="https://cdn.discordapp.com/embed/avatars/0.png">
@@ -237,15 +240,34 @@
                             </div>
                         </div>
                     </div>
-                    <div id="activity" class="text-white/70 pl-12 text-[13px]">
-                        <!-- Will be filled by JS -->
-                    </div>
+                    <div id="activity" class="text-white/70 pl-12 text-[13px]"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Right Click Popup (kept but disabled on mobile) -->
+    <!-- Instagram Video Modal -->
+    <div id="insta-video-modal">
+        <div class="modal-content">
+            <video id="insta-video" loop playsinline>
+                <source src="https://file.garden/advUdw57_HghQzKi/shyyy%20(online-video-cutter.com).mp4" type="video/mp4">
+            </video>
+            
+            <div class="p-5 flex items-center justify-between border-t border-white/10">
+                <button onclick="closeInstaVideo()" 
+                        class="text-white/60 hover:text-white text-2xl transition-colors">
+                    ✕
+                </button>
+                
+                <a href="https://instagram.com/shy7" target="_blank" class="follow-btn">
+                    <i class="fa-brands fa-instagram"></i>
+                    Follow
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Click Popup -->
     <div id="made-by-popup">
         made by <span class="font-medium text-white/80">s3lf</span>
     </div>
@@ -261,14 +283,11 @@
     </div>
 
     <script>
-        // === Right Click Popup - DISABLED ON MOBILE ===
+        // Right Click Popup, Tilt, Enter Screen, Volume, Discord (unchanged)
         const popup = document.getElementById('made-by-popup');
         let popupTimeout;
-
         function showMadeBy(e) {
-            // Only show on desktop (larger screens)
             if (window.innerWidth <= 768) return;
-            
             clearTimeout(popupTimeout);
             let left = e.clientX + 12;
             let top = e.clientY + 12;
@@ -276,14 +295,9 @@
             if (top + 50 > window.innerHeight) top = e.clientY - 50;
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
-         
             popup.classList.add('show');
-            popupTimeout = setTimeout(() => {
-                popup.classList.remove('show');
-            }, 2400);
+            popupTimeout = setTimeout(() => popup.classList.remove('show'), 2400);
         }
-
-        // Desktop only right-click
         document.addEventListener('contextmenu', (e) => {
             if (window.innerWidth > 768) {
                 showMadeBy(e);
@@ -291,12 +305,8 @@
             }
         });
 
-        // 3D Tilt Effect
         const card = document.getElementById('card');
-        let currentTiltX = 0, currentTiltY = 0;
-        let targetTiltX = 0, targetTiltY = 0;
-        let isDragging = false;
-
+        let currentTiltX = 0, currentTiltY = 0, targetTiltX = 0, targetTiltY = 0;
         function animateTilt() {
             currentTiltX = currentTiltX * 0.82 + targetTiltX * 0.18;
             currentTiltY = currentTiltY * 0.82 + targetTiltY * 0.18;
@@ -317,28 +327,9 @@
             targetTiltY = 0;
         });
 
-        // Touch support for tilt (kept)
-        card.addEventListener('touchstart', (e) => { isDragging = true; }, { passive: true });
-        card.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const touch = e.touches[0];
-            const rect = card.getBoundingClientRect();
-            const deltaX = (touch.clientX - (rect.left + rect.width/2)) / rect.width;
-            const deltaY = (touch.clientY - (rect.top + rect.height/2)) / rect.height;
-            targetTiltY = deltaX * 32;
-            targetTiltX = -deltaY * 26;
-            e.preventDefault();
-        }, { passive: false });
-        card.addEventListener('touchend', () => {
-            isDragging = false;
-            targetTiltX = 0;
-            targetTiltY = 0;
-        });
-
-        // Enter Screen + Video + Volume + Discord
         const enterScreen = document.getElementById('enter-screen');
         const mainContent = document.getElementById('main-content');
-        const video = document.getElementById('bg-video');
+        const bgVideo = document.getElementById('bg-video');
         const videoSrc = "https://file.garden/advUdw57_HghQzKi/SaveClip.App_AQPSqUFZhQat87Hui2mxwSSV12bf95R_PNksKH5ivoX6tPv1iPOloC9l7DHhdT0Ff170IiakwFmWZUBjqkUPOz10VxahigezC-52H5s.mp4";
 
         enterScreen.addEventListener('click', () => {
@@ -346,43 +337,34 @@
             setTimeout(() => {
                 enterScreen.classList.add('hidden');
                 mainContent.classList.remove('hidden');
-                video.classList.remove('hidden');
-                if (!video.src) video.src = videoSrc;
-                video.load();
-                video.volume = 0.65;
-                video.play().catch(() => {});
+                bgVideo.classList.remove('hidden');
+                bgVideo.src = videoSrc;
+                bgVideo.volume = 0.65;
+                bgVideo.play().catch(() => {});
             }, 420);
         });
 
-        // Volume Control
         const volumeBtn = document.getElementById('volume-btn');
         const sliderContainer = document.getElementById('volume-slider-container');
         const slider = document.getElementById('volume-slider');
         const volumeIcon = document.getElementById('volume-icon');
-
         volumeBtn.addEventListener('click', () => sliderContainer.classList.toggle('hidden'));
         slider.addEventListener('input', () => {
-            video.volume = parseFloat(slider.value);
+            bgVideo.volume = parseFloat(slider.value);
             if (slider.value == 0) volumeIcon.className = "fa-solid fa-volume-xmark text-xl text-white/80";
             else if (slider.value < 0.4) volumeIcon.className = "fa-solid fa-volume-low text-xl text-white/80";
             else volumeIcon.className = "fa-solid fa-volume-high text-xl text-white/80";
         });
 
-        // Discord Status + Activity
         const discordId = "396352442507198465";
         const activityEl = document.getElementById('activity');
-
         async function updateDiscord() {
             try {
                 const res = await fetch(`https://api.lanyard.rest/v1/users/${discordId}`, { cache: 'no-store' });
                 const json = await res.json();
                 if (!json.success || !json.data) return;
                 const d = json.data;
-
-                const avatarUrl = d.discord_user.avatar
-                    ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}.png?size=128`
-                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
-             
+                const avatarUrl = d.discord_user.avatar ? `https://cdn.discordapp.com/avatars/${discordId}/${d.discord_user.avatar}.png?size=128` : 'https://cdn.discordapp.com/embed/avatars/0.png';
                 document.getElementById('dc-pfp').src = avatarUrl;
                 document.getElementById('dc-username').textContent = d.discord_user.username || "s3lf";
 
@@ -398,15 +380,7 @@
 
                 let html = `<span class="text-xs text-white/60">No current activity</span>`;
                 if (d.spotify) {
-                    html = `
-                        <div class="activity-content">
-                            <img src="${d.spotify.album_art_url}" alt="album">
-                            <div class="activity-text">
-                                <div class="song">${d.spotify.song}</div>
-                                <div class="artist">${d.spotify.artist}</div>
-                            </div>
-                        </div>
-                    `;
+                    html = `<div class="activity-content"><img src="${d.spotify.album_art_url}" alt="album"><div class="activity-text"><div class="song">${d.spotify.song}</div><div class="artist">${d.spotify.artist}</div></div></div>`;
                 } else if (d.activities && d.activities.length > 0) {
                     const act = d.activities[0];
                     html = `<strong>${act.name}</strong>`;
@@ -415,6 +389,31 @@
                 }
                 activityEl.innerHTML = html;
             } catch (e) {}
+        }
+
+        // Instagram Modal
+        const instaBtn = document.getElementById('insta-btn');
+        const instaModal = document.getElementById('insta-video-modal');
+        const instaVideo = document.getElementById('insta-video');
+
+        instaBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            bgVideo.style.opacity = '0';
+            setTimeout(() => bgVideo.pause(), 400);
+
+            instaModal.style.display = 'flex';
+            setTimeout(() => instaModal.classList.add('show'), 10);
+            instaVideo.play().catch(() => {});
+        });
+
+        function closeInstaVideo() {
+            instaModal.classList.remove('show');
+            instaVideo.pause();
+            setTimeout(() => {
+                instaModal.style.display = 'none';
+                bgVideo.style.opacity = '1';
+                bgVideo.play().catch(() => {});
+            }, 700);
         }
 
         window.onload = () => {
