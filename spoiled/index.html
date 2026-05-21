@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>s3lf</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #060608;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: var(--bg);
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+            touch-action: none;
+        }
+
+        /* BG */
+        #bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(15,15,20,0.6) 0%, rgba(2,2,4,0.98) 70%);
+            z-index: 0;
+        }
+
+        /* PARTICLES */
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* MUSIC */
+        #bg-audio { display: none; }
+
+        /* ENTER SCREEN */
+        #enter-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: var(--bg);
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        .enter-ring {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: ringPulse 2.8s ease-in-out infinite;
+        }
+
+        .enter-ring::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            animation: dotPulse 2.8s ease-in-out infinite;
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { transform: scale(0.92); border-color: rgba(255,255,255,0.06); }
+            50%       { transform: scale(1);    border-color: rgba(255,255,255,0.14); }
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 0.3; }
+            50%       { opacity: 1;   }
+        }
+
+        .enter-label {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.15);
+        }
+
+        @keyframes cardReveal {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* MAIN */
+        #main-content {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+        }
+
+        #main-content.visible {
+            animation: cardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* CARD — horizontal pill */
+        .card {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(10,10,10,0.82);
+            border: 1px solid rgba(80,80,80,0.25);
+            border-radius: 16px;
+            padding: 12px 16px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.03),
+                0 20px 50px -10px rgba(0,0,0,0.9);
+            will-change: transform;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* PFP */
+        .pfp-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .pfp {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.7);
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 1px;
+            right: 1px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #222;
+            border: 1.5px solid #080808;
+            transition: background 0.3s ease;
+        }
+
+        .status-dot.online { background: #888; }
+        .status-dot.idle   { background: #555; }
+        .status-dot.dnd    { background: #333; }
+
+        /* INFO */
+        .card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(210,215,230,0.9) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .card-bio {
+            font-size: 9px;
+            font-weight: 400;
+            font-style: italic;
+            color: rgba(255,255,255,0.22);
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        /* DIVIDER (vertical) */
+        .vdivider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+
+        /* SOCIALS — plain icons, no boxes */
+        .socials {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.28);
+            font-size: 18px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.18s ease;
+            width: 20px;
+            height: 20px;
+            line-height: 1;
+        }
+
+        .social-btn:hover,
+        .social-btn:active {
+            color: rgba(255,255,255,0.75);
+            transform: translateY(-2px);
+        }
+
+        .social-btn img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            opacity: 0.28;
+            transition: opacity 0.2s ease, transform 0.18s ease;
+            display: block;
+        }
+
+        .social-btn:hover img,
+        .social-btn:active img {
+            opacity: 0.75;
+            transform: translateY(-2px);
+        }
+
+        /* INSTAGRAM MODAL */
+        #insta-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #insta-modal.show { opacity: 1; pointer-events: all; }
+
+        .modal-card {
+            width: 300px;
+            max-width: calc(100vw - 40px);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);
+            transform: translateY(10px) scale(0.98);
+            transition: transform 0.3s ease;
+        }
+
+        #insta-modal.show .modal-card { transform: translateY(0) scale(1); }
+
+        .modal-card video { width: 100%; height: auto; display: block; }
+
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.3);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover { color: rgba(255,255,255,0.65); }
+
+        .modal-follow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            padding: 7px 16px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .modal-follow:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* VOLUME */
+        #vol-wrap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 20;
+        }
+
+        #vol-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.18);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.25s ease, color 0.25s ease, opacity 0.4s ease;
+            backdrop-filter: blur(16px);
+            opacity: 0.45;
+        }
+
+        #vol-btn:hover {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.55);
+            opacity: 1;
+        }
+
+        #vol-slider-wrap {
+            position: absolute;
+            bottom: 46px;
+            right: 0;
+            background: rgba(10,10,10,0.94);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 12px 14px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(6px);
+            transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1),
+                        visibility 0.35s ease,
+                        transform 0.35s cubic-bezier(0.16,1,0.3,1);
+            backdrop-filter: blur(24px);
+        }
+
+        #vol-slider-wrap.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        #vol-slider {
+            width: 90px;
+            accent-color: rgba(255,255,255,0.75);
+            cursor: pointer;
+            display: block;
+        }
+
+        /* MOBILE */
+        @media (max-width: 540px) {
+            .card {
+                padding: 10px 14px;
+                max-width: 300px;
+                border-radius: 14px;
+                gap: 10px;
+            }
+
+            .pfp { width: 38px; height: 38px; }
+
+            .card-name { font-size: 14px; }
+            .card-bio  { font-size: 8px; }
+
+            .vdivider { height: 24px; }
+
+            .socials { gap: 12px; }
+
+            .social-btn { font-size: 13px; width: 14px; height: 14px; }
+            .social-btn img { width: 13px; height: 13px; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="bg-overlay"></div>
+    <canvas id="particles"></canvas>
+    <audio id="bg-audio" loop src="https://file.garden/advUdw57_HghQzKi/4c13e99f-df62-4655-99ff-890b2398a0f5.mp3"></audio>
+
+    <!-- ENTER -->
+    <div id="enter-screen">
+        <div class="enter-ring"></div>
+        <p class="enter-label">tap to enter</p>
+    </div>
+
+    <!-- MAIN -->
+    <div id="main-content">
+        <div class="card" id="card">
+
+            <div class="pfp-wrap">
+                <img src="https://file.garden/advUdw57_HghQzKi/71c34bc24bf6c3b5493fa764df160430.png"
+                     class="pfp" draggable="false" alt="s3lf">
+                <div class="status-dot" id="status-dot"></div>
+            </div>
+
+            <div class="card-info">
+                <div class="card-name">s3lf</div>
+            </div>
+
+            <div class="vdivider"></div>
+
+            <div class="socials">
+                <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-btn" title="Discord">
+                    <i class="fa-brands fa-discord"></i>
+                </a>
+                <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-btn" title="Roblox">
+                    <img src="https://files.catbox.moe/q4jtcq.gif" alt="Roblox">
+                </a>
+                <a href="#" id="insta-btn" class="social-btn" title="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- INSTAGRAM MODAL -->
+    <div id="insta-modal">
+        <div class="modal-card">
+            <video id="insta-video" loop playsinline>
+                <source src="https://file.garden/advUdw57_HghQzKi/shyyy%20(online-video-cutter.com).mp4">
+            </video>
+            <div class="modal-footer">
+                <button class="modal-close" onclick="closeInsta()">✕</button>
+                <a href="https://instagram.com/shy7" target="_blank" class="modal-follow">
+                    <i class="fa-brands fa-instagram"></i> Follow
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- VOLUME -->
+    <div id="vol-wrap">
+        <button id="vol-btn"><i id="vol-icon" class="fa-solid fa-volume-high"></i></button>
+        <div id="vol-slider-wrap">
+            <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.65">
+        </div>
+    </div>
+
+    <script>
+        /* ── PARTICLES ── */
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resizeCanvas() {
+            W = canvas.width  = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const COUNT = 90;
+        const mouse = { x: -9999, y: -9999 };
+
+        const pts = Array.from({ length: COUNT }, () => ({
+            x:  Math.random() * window.innerWidth,
+            y:  Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 0.25,
+            vy: Math.random() * 0.35 + 0.08,
+            r:  Math.random() * 1.4 + 0.4,
+            o:  Math.random() * 0.35 + 0.08,
+        }));
+
+        document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        document.addEventListener('touchmove', e => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+        }, { passive: true });
+        document.addEventListener('touchend', () => { mouse.x = -9999; mouse.y = -9999; });
+
+        const REPEL = 110;
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, W, H);
+            for (const p of pts) {
+                const dx   = p.x - mouse.x;
+                const dy   = p.y - mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < REPEL && dist > 0) {
+                    const f = (REPEL - dist) / REPEL;
+                    p.vx += (dx / dist) * f * 0.9;
+                    p.vy += (dy / dist) * f * 0.9;
+                }
+
+                p.vx *= 0.96;
+                p.vy  = p.vy * 0.96 + 0.04;
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; p.vx = (Math.random() - 0.5) * 0.25; p.vy = Math.random() * 0.35 + 0.08; }
+                if (p.x < -10) p.x = W + 10;
+                if (p.x > W + 10) p.x = -10;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(200,210,255,${p.o})`;
+                ctx.fill();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        /* ── ENTER ── */
+        const enterScreen = document.getElementById('enter-screen');
+        const mainContent = document.getElementById('main-content');
+        const bgAudio     = document.getElementById('bg-audio');
+
+        enterScreen.addEventListener('click', () => {
+            enterScreen.style.opacity = '0';
+            setTimeout(() => {
+                enterScreen.style.display = 'none';
+                mainContent.style.display = 'flex';
+                requestAnimationFrame(() => requestAnimationFrame(() => mainContent.classList.add('visible')));
+                bgAudio.volume = 0.65;
+                bgAudio.play().catch(() => {});
+                updateDiscord();
+            }, 480);
+        });
+
+        /* ── CARD TILT (mouse) ── */
+        const card = document.getElementById('card');
+        let tx = 0, ty = 0, cx = 0, cy = 0;
+
+        card.style.willChange = 'transform';
+        card.style.backfaceVisibility = 'hidden';
+
+        function tiltLoop() {
+            cx += (tx - cx) * 0.07;
+            cy += (ty - cy) * 0.07;
+            card.style.transform = `perspective(1800px) rotateX(${cx}deg) rotateY(${cy}deg)`;
+            requestAnimationFrame(tiltLoop);
+        }
+        tiltLoop();
+
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            tx = -((e.clientY - r.top)  / r.height - 0.5) * 12;
+            ty =  ((e.clientX - r.left) / r.width  - 0.5) * 16;
+        });
+        card.addEventListener('mouseleave', () => { tx = 0; ty = 0; });
+
+        /* ── TOUCH TILT ── */
+        let touchActive = false;
+
+        card.addEventListener('touchstart', e => {
+            touchActive = true;
+            const t = e.touches[0];
+            const r = card.getBoundingClientRect();
+            tx = -((t.clientY - r.top)  / r.height - 0.5) * 14;
+            ty =  ((t.clientX - r.left) / r.width  - 0.5) * 18;
+        }, { passive: true });
+
+        card.addEventListener('touchmove', e => {
+            if (!touchActive) return;
+            const t = e.touches[0];
+            const r = card.getBoundingClientRect();
+            tx = -((t.clientY - r.top)  / r.height - 0.5) * 14;
+            ty =  ((t.clientX - r.left) / r.width  - 0.5) * 18;
+        }, { passive: true });
+
+        card.addEventListener('touchend', () => { touchActive = false; tx = 0; ty = 0; });
+
+        /* ── VOLUME ── */
+        const volBtn        = document.getElementById('vol-btn');
+        const volSliderWrap = document.getElementById('vol-slider-wrap');
+        const volSlider     = document.getElementById('vol-slider');
+        const volIcon       = document.getElementById('vol-icon');
+
+        let volAutoClose;
+
+        function openVol() {
+            volSliderWrap.classList.add('open');
+            clearTimeout(volAutoClose);
+            volAutoClose = setTimeout(() => volSliderWrap.classList.remove('open'), 2800);
+        }
+
+        function closeVol() {
+            clearTimeout(volAutoClose);
+            volSliderWrap.classList.remove('open');
+        }
+
+        volBtn.addEventListener('click', () => {
+            volSliderWrap.classList.contains('open') ? closeVol() : openVol();
+        });
+
+        volSlider.addEventListener('input', () => {
+            const v = parseFloat(volSlider.value);
+            bgAudio.volume = v;
+            volIcon.className = v === 0 ? 'fa-solid fa-volume-xmark' : v < 0.4 ? 'fa-solid fa-volume-low' : 'fa-solid fa-volume-high';
+            clearTimeout(volAutoClose);
+            volAutoClose = setTimeout(() => volSliderWrap.classList.remove('open'), 2800);
+        });
+
+        document.addEventListener('click', e => {
+            if (!document.getElementById('vol-wrap').contains(e.target)) closeVol();
+        });
+
+        /* ── INSTAGRAM MODAL ── */
+        const instaModal = document.getElementById('insta-modal');
+        const instaVideo = document.getElementById('insta-video');
+
+        document.getElementById('insta-btn').addEventListener('click', e => {
+            e.preventDefault();
+            instaModal.style.display = 'flex';
+            requestAnimationFrame(() => requestAnimationFrame(() => instaModal.classList.add('show')));
+            instaVideo.play().catch(() => {});
+        });
+
+        function closeInsta() {
+            instaModal.classList.remove('show');
+            instaVideo.pause();
+            setTimeout(() => { instaModal.style.display = 'none'; }, 320);
+        }
+
+        /* ── DISCORD / LANYARD ── */
+        const DISCORD_ID = '396352442507198465';
+
+        async function updateDiscord() {
+            try {
+                const res  = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`, { cache: 'no-store' });
+                const json = await res.json();
+                if (!json.success) return;
+                const d      = json.data;
+                const status = d.discord_status || 'offline';
+                const dot    = document.getElementById('status-dot');
+                dot.className = 'status-dot ' + status;
+            } catch(e) {}
+        }
+
+        setInterval(updateDiscord, 15000);
+    </script>
+</body>
+</html>
