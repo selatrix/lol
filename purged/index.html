@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>s3lf</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #080808;
+            --card-bg: rgba(10,10,22,0.58);
+            --card-border: rgba(255,255,255,0.07);
+            --surface: rgba(255,255,255,0.03);
+            --surface-border: rgba(255,255,255,0.055);
+            --text: #ffffff;
+            --text-muted: rgba(255,255,255,0.4);
+            --text-dim: rgba(255,255,255,0.2);
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+            touch-action: none;
+        }
+
+        /* BG VIDEO */
+        #bg-video {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.95);
+        }
+
+        #bg-overlay {
+            position: fixed;
+            inset: 0;
+            background:
+                linear-gradient(180deg,
+                    rgba(2,6,18,0.55) 0%,
+                    rgba(4,10,30,0.72) 50%,
+                    rgba(2,4,14,0.9)  100%);
+            z-index: 1;
+        }
+
+        /* subtle night vignette */
+        #bg-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(80,100,200,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ENTER SCREEN */
+        #enter-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            background: #080808;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        .enter-ring {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: ringPulse 2.8s ease-in-out infinite;
+        }
+
+        .enter-ring::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            animation: dotPulse 2.8s ease-in-out infinite;
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { transform: scale(0.92); border-color: rgba(255,255,255,0.06); }
+            50%       { transform: scale(1);    border-color: rgba(255,255,255,0.15); }
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 0.3; }
+            50%       { opacity: 1;   }
+        }
+
+        .enter-label {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.15);
+        }
+
+        @keyframes cardReveal {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* MAIN LAYOUT */
+        #main-content {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+        }
+
+        #main-content.visible {
+            animation: cardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* CARD */
+        .card {
+            width: 100%;
+            max-width: 298px;
+            background: var(--card-bg);
+            border: 1px solid rgba(80,80,80,0.28);
+            border-radius: 20px;
+            padding: 16px;
+            backdrop-filter: blur(52px);
+            -webkit-backdrop-filter: blur(52px);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.02) inset,
+                0 40px 80px -20px rgba(0,0,0,0.75);
+            will-change: transform;
+        }
+
+        /* PROFILE HEADER */
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .pfp-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .pfp {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center 30%;
+            display: block;
+            border: 1px solid rgba(120,140,255,0.18);
+            filter: brightness(0.70) saturate(0.85) hue-rotate(195deg);
+            box-shadow:
+                0 0 0 4px rgba(60,80,200,0.07),
+                0 0 24px 6px rgba(40,60,180,0.18),
+                0 8px 32px rgba(0,0,0,0.65);
+        }
+
+        @keyframes spinRing {
+            to { transform: rotate(360deg); }
+        }
+
+        .activity-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+            pointer-events: none;
+            transition: max-height 0.55s cubic-bezier(0.16,1,0.3,1),
+                        opacity     0.55s cubic-bezier(0.16,1,0.3,1),
+                        margin-top  0.55s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        .activity-wrap.open {
+            max-height: 22px;
+            opacity: 1;
+            margin-top: 7px;
+        }
+
+        .activity-ring {
+            width: 9px;
+            height: 9px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-top-color: rgba(255,255,255,0.38);
+            border-radius: 50%;
+            animation: spinRing 1.1s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .activity-label {
+            font-size: 8px;
+            letter-spacing: 0.07em;
+            color: rgba(255,255,255,0.28);
+            font-family: 'Inter', sans-serif;
+            text-transform: lowercase;
+        }
+
+        .profile-info {}
+
+        .card-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(160deg, #ffffff 0%, #e8ecff 45%, #c8d0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            line-height: 1.15;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+            filter: drop-shadow(0 0 8px rgba(180,190,255,0.18));
+        }
+
+        .card-bio {
+            font-size: 10px;
+            font-weight: 400;
+            font-style: italic;
+            color: rgba(160,175,255,0.45);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        /* DIVIDER */
+        .divider {
+            height: 1px;
+            background: var(--surface-border);
+            margin-bottom: 20px;
+        }
+
+        /* SOCIAL ICONS */
+        .socials {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            color: rgba(255,255,255,0.4);
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .social-btn:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.82);
+        }
+
+        .social-btn img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            opacity: 0.4;
+            transition: opacity 0.2s ease;
+        }
+
+        .social-btn:hover img {
+            opacity: 0.82;
+        }
+
+        /* DISCORD SECTION */
+        .discord-box {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .discord-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .dc-pfp {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .dc-name-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dc-username {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.82);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dc-badge {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.28);
+            flex-shrink: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .dc-badge.online { background: rgba(34,197,94,0.1);  color: rgba(34,197,94,0.75); }
+        .dc-badge.idle   { background: rgba(234,179,8,0.1);  color: rgba(234,179,8,0.75); }
+        .dc-badge.dnd    { background: rgba(239,68,68,0.1);  color: rgba(239,68,68,0.75); }
+
+        .dc-activity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 40px;
+        }
+
+        .dc-activity img {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .dc-activity-text { min-width: 0; }
+
+        .dc-song {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.72);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dc-artist {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .dc-empty {
+            font-size: 11px;
+            color: var(--text-dim);
+            padding-left: 40px;
+        }
+
+        /* INSTAGRAM MODAL */
+        #insta-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #insta-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            width: 300px;
+            max-width: calc(100vw - 40px);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);
+            transform: translateY(10px) scale(0.98);
+            transition: transform 0.3s ease;
+        }
+
+        #insta-modal.show .modal-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-card video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.3);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s ease;
+            line-height: 1;
+        }
+
+        .modal-close:hover { color: rgba(255,255,255,0.65); }
+
+        .modal-follow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            padding: 7px 16px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .modal-follow:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        /* VOLUME */
+        #vol-wrap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 20;
+        }
+
+        #vol-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, color 0.2s ease;
+            backdrop-filter: blur(16px);
+        }
+
+        #vol-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.75);
+        }
+
+        #vol-slider-wrap {
+            position: absolute;
+            bottom: 46px;
+            right: 0;
+            background: rgba(10,10,10,0.94);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: none;
+            backdrop-filter: blur(24px);
+        }
+
+        #vol-slider {
+            width: 90px;
+            accent-color: rgba(255,255,255,0.75);
+            cursor: pointer;
+            display: block;
+        }
+
+        /* RIGHT-CLICK POPUP */
+        #ctx-popup {
+            position: fixed;
+            z-index: 100;
+            background: rgba(10,10,10,0.94);
+            border: 1px solid rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.96) translateY(4px);
+            transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+            backdrop-filter: blur(20px);
+        }
+
+        #ctx-popup.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* MOBILE */
+        @media (max-width: 480px) {
+            #main-content { padding: 16px; }
+
+            .card {
+                padding: 20px 16px;
+                border-radius: 18px;
+                max-width: 320px;
+            }
+
+            .profile-header { gap: 10px; margin-bottom: 18px; }
+
+            .pfp { width: 72px; height: 72px; }
+
+            .card-name { font-size: 22px; }
+            .card-bio  { font-size: 9px; letter-spacing: 2px; }
+
+            .divider { margin-bottom: 14px; }
+
+            .socials { gap: 8px; margin-bottom: 14px; }
+
+            .social-btn {
+                width: 46px;
+                height: 46px;
+                border-radius: 12px;
+                font-size: 20px;
+            }
+
+            .social-btn img { width: 22px; height: 22px; }
+
+            .discord-box { padding: 10px 12px; border-radius: 10px; }
+
+            .dc-pfp    { width: 26px; height: 26px; }
+            .dc-username { font-size: 12px; }
+            .dc-badge  { font-size: 8px; padding: 2px 6px; }
+            .dc-song   { font-size: 11px; }
+            .dc-artist { font-size: 10px; }
+            .dc-empty  { font-size: 10px; padding-left: 36px; }
+            .dc-activity { padding-left: 36px; gap: 8px; }
+            .dc-activity img { width: 26px; height: 26px; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <video id="bg-video" loop playsinline preload="none"></video>
+    <div id="bg-overlay"></div>
+
+    <!-- ENTER -->
+    <div id="enter-screen">
+        <div class="enter-ring"></div>
+        <p class="enter-label">tap to enter</p>
+    </div>
+
+    <!-- MAIN -->
+    <div id="main-content">
+        <div class="card" id="card">
+
+            <div class="profile-header">
+                <div class="pfp-wrap">
+                    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2tkMWE3cHpzbnVyMGE5enkxMXE5bXowd3pmMzdhOTJ6ODF5djJ5eiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gCKN5aEpSycz0lKell/giphy.gif"
+                         class="pfp" draggable="false" alt="s3lf">
+                </div>
+                <div class="profile-info">
+                    <div class="card-name">s3lf</div>
+                    <div class="card-bio">social media expert</div>
+                    <div class="activity-wrap" id="activity-wrap">
+                        <div class="activity-ring"></div>
+                        <span class="activity-label">actively working</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="socials">
+                <a href="https://discord.com/users/396352442507198465" target="_blank" class="social-btn" title="Discord">
+                    <i class="fa-brands fa-discord"></i>
+                </a>
+                <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-btn" title="Roblox">
+                    <img src="https://files.catbox.moe/q4jtcq.gif" alt="Roblox">
+                </a>
+                <a href="#" id="insta-btn" class="social-btn" title="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+            </div>
+
+            <div class="discord-box">
+                <div class="discord-header">
+                    <img id="dc-pfp" class="dc-pfp" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="">
+                    <div class="dc-name-row">
+                        <span id="dc-username" class="dc-username">s3lf</span>
+                        <span id="dc-badge" class="dc-badge">Offline</span>
+                    </div>
+                </div>
+                <div id="dc-activity" class="dc-empty">No current activity</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- INSTAGRAM MODAL -->
+    <div id="insta-modal">
+        <div class="modal-card">
+            <video id="insta-video" loop playsinline>
+                <source src="https://file.garden/advUdw57_HghQzKi/shyyy%20(online-video-cutter.com).mp4">
+            </video>
+            <div class="modal-footer">
+                <button class="modal-close" onclick="closeInsta()">✕</button>
+                <a href="https://instagram.com/shy7" target="_blank" class="modal-follow">
+                    <i class="fa-brands fa-instagram"></i> Follow
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- VOLUME -->
+    <div id="vol-wrap">
+        <button id="vol-btn"><i id="vol-icon" class="fa-solid fa-volume-high"></i></button>
+        <div id="vol-slider-wrap">
+            <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.65">
+        </div>
+    </div>
+
+    <!-- CONTEXT POPUP -->
+    <div id="ctx-popup">by <strong style="color:rgba(255,255,255,0.7);font-weight:600;">s3lf</strong></div>
+
+    <script>
+        /* ENTER */
+        const enterScreen = document.getElementById('enter-screen');
+        const mainContent = document.getElementById('main-content');
+        const bgVideo     = document.getElementById('bg-video');
+        const VIDEO_SRC   = "https://file.garden/advUdw57_HghQzKi/AQPszTVDbxPmUUm1Oc0nb8mA3O8ZCJtJC33tTPTW9yQDpiEVc-Kue6PNrNafRqrEmDsP6T-WYGEuNlioiucFOnwH91nxHS0AUCF2Gmc.mp4";
+
+        enterScreen.addEventListener('click', () => {
+            enterScreen.style.opacity = '0';
+            setTimeout(() => {
+                enterScreen.style.display = 'none';
+                mainContent.style.display = 'flex';
+                requestAnimationFrame(() => requestAnimationFrame(() => mainContent.classList.add('visible')));
+                bgVideo.src = VIDEO_SRC;
+                bgVideo.volume = 0.65;
+                bgVideo.play().catch(() => {});
+                updateDiscord();
+                setTimeout(() => {
+                    const aw = document.getElementById('activity-wrap');
+                    aw.classList.add('open');
+                    setTimeout(() => aw.classList.remove('open'), 4000);
+                }, 900);
+            }, 480);
+        });
+
+        /* CARD TILT */
+        const card = document.getElementById('card');
+        let tx = 0, ty = 0, cx = 0, cy = 0;
+
+        card.style.willChange = 'transform';
+        card.style.backfaceVisibility = 'hidden';
+
+        function tiltLoop() {
+            cx += (tx - cx) * 0.095;
+            cy += (ty - cy) * 0.095;
+            card.style.transform = `perspective(1400px) rotateX(${cx}deg) rotateY(${cy}deg)`;
+            requestAnimationFrame(tiltLoop);
+        }
+        tiltLoop();
+
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            tx = -((e.clientY - r.top)  / r.height - 0.5) * 18;
+            ty =  ((e.clientX - r.left) / r.width  - 0.5) * 24;
+        });
+        card.addEventListener('mouseleave', () => { tx = 0; ty = 0; });
+
+        /* TOUCH TILT */
+        let touchActive = false;
+
+        card.addEventListener('touchstart', e => {
+            touchActive = true;
+            const t = e.touches[0];
+            const r = card.getBoundingClientRect();
+            tx = -((t.clientY - r.top)  / r.height - 0.5) * 16;
+            ty =  ((t.clientX - r.left) / r.width  - 0.5) * 20;
+        }, { passive: true });
+
+        card.addEventListener('touchmove', e => {
+            if (!touchActive) return;
+            const t = e.touches[0];
+            const r = card.getBoundingClientRect();
+            tx = -((t.clientY - r.top)  / r.height - 0.5) * 16;
+            ty =  ((t.clientX - r.left) / r.width  - 0.5) * 20;
+        }, { passive: true });
+
+        card.addEventListener('touchend', () => {
+            touchActive = false;
+            tx = 0; ty = 0;
+        });
+
+        /* VOLUME */
+        const volBtn        = document.getElementById('vol-btn');
+        const volSliderWrap = document.getElementById('vol-slider-wrap');
+        const volSlider     = document.getElementById('vol-slider');
+        const volIcon       = document.getElementById('vol-icon');
+
+        volBtn.addEventListener('click', () => volSliderWrap.style.display = volSliderWrap.style.display === 'block' ? 'none' : 'block');
+        volSlider.addEventListener('input', () => {
+            const v = parseFloat(volSlider.value);
+            bgVideo.volume = v;
+            volIcon.className = v === 0 ? 'fa-solid fa-volume-xmark' : v < 0.4 ? 'fa-solid fa-volume-low' : 'fa-solid fa-volume-high';
+        });
+        document.addEventListener('click', e => {
+            if (!document.getElementById('vol-wrap').contains(e.target)) volSliderWrap.style.display = 'none';
+        });
+
+        /* INSTAGRAM MODAL */
+        const instaModal = document.getElementById('insta-modal');
+        const instaVideo = document.getElementById('insta-video');
+
+        document.getElementById('insta-btn').addEventListener('click', e => {
+            e.preventDefault();
+            bgVideo.style.transition = 'opacity 0.3s';
+            bgVideo.style.opacity = '0';
+            setTimeout(() => bgVideo.pause(), 300);
+            instaModal.style.display = 'flex';
+            requestAnimationFrame(() => requestAnimationFrame(() => instaModal.classList.add('show')));
+            instaVideo.play().catch(() => {});
+        });
+
+        function closeInsta() {
+            instaModal.classList.remove('show');
+            instaVideo.pause();
+            setTimeout(() => {
+                instaModal.style.display = 'none';
+                bgVideo.style.opacity = '1';
+                bgVideo.play().catch(() => {});
+            }, 320);
+        }
+
+        /* RIGHT-CLICK */
+        const ctxPopup = document.getElementById('ctx-popup');
+        let ctxTimer;
+
+        document.addEventListener('contextmenu', e => {
+            if (window.innerWidth <= 768) return false;
+            e.preventDefault();
+            if (ctxPopup.classList.contains('show')) {
+                clearTimeout(ctxTimer);
+                ctxPopup.classList.remove('show');
+                return;
+            }
+            clearTimeout(ctxTimer);
+            let l = e.clientX + 12, t = e.clientY + 12;
+            if (l + 160 > window.innerWidth)  l = e.clientX - 148;
+            if (t + 40  > window.innerHeight) t = e.clientY - 42;
+            ctxPopup.style.left = l + 'px';
+            ctxPopup.style.top  = t + 'px';
+            ctxPopup.classList.add('show');
+            ctxTimer = setTimeout(() => ctxPopup.classList.remove('show'), 900);
+        });
+
+        /* DISCORD / LANYARD */
+        const DISCORD_ID = '396352442507198465';
+
+        async function updateDiscord() {
+            try {
+                const res  = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`, { cache: 'no-store' });
+                const json = await res.json();
+                if (!json.success) return;
+                const d = json.data;
+
+                const avatar = d.discord_user.avatar
+                    ? `https://cdn.discordapp.com/avatars/${DISCORD_ID}/${d.discord_user.avatar}.png?size=128`
+                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+                document.getElementById('dc-pfp').src = avatar;
+                document.getElementById('dc-username').textContent = d.discord_user.username || 's3lf';
+
+                const status = d.discord_status || 'offline';
+                const badge  = document.getElementById('dc-badge');
+                badge.className   = 'dc-badge ' + status;
+                badge.textContent = status === 'dnd' ? 'DND' : status.charAt(0).toUpperCase() + status.slice(1);
+
+                const actEl = document.getElementById('dc-activity');
+                if (d.spotify) {
+                    actEl.className = 'dc-activity';
+                    actEl.innerHTML = `
+                        <img src="${d.spotify.album_art_url}" alt="album">
+                        <div class="dc-activity-text">
+                            <div class="dc-song">${d.spotify.song}</div>
+                            <div class="dc-artist">${d.spotify.artist}</div>
+                        </div>`;
+                } else if (d.activities && d.activities.length > 0) {
+                    const act = d.activities.find(a => a.type !== 4) || d.activities[0];
+                    actEl.className = 'dc-activity';
+                    actEl.innerHTML = `<div class="dc-activity-text">
+                        <div class="dc-song">${act.name}</div>
+                        ${act.details ? `<div class="dc-artist">${act.details}</div>` : ''}
+                    </div>`;
+                } else {
+                    actEl.className = 'dc-empty';
+                    actEl.textContent = 'No current activity';
+                }
+            } catch(e) {}
+        }
+
+        setInterval(updateDiscord, 15000);
+    </script>
+</body>
+</html>
