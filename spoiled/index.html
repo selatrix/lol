@@ -394,26 +394,37 @@
             display: block;
         }
 
+        /* FLOAT ANIMATION (mobile) */
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-7px); }
+        }
+
+        .card.floating {
+            animation: floatCard 3.6s ease-in-out infinite;
+            will-change: transform;
+        }
+
         /* MOBILE */
         @media (max-width: 540px) {
             .card {
-                padding: 9px 12px;
-                max-width: 272px;
-                border-radius: 13px;
-                gap: 8px;
+                padding: 10px 13px;
+                max-width: 308px;
+                border-radius: 14px;
+                gap: 9px;
             }
 
-            .pfp { width: 34px; height: 34px; }
+            .pfp { width: 42px; height: 42px; }
 
-            .card-name { font-size: 13px; }
-            .card-bio  { font-size: 7.5px; }
+            .card-name { font-size: 15px; margin-bottom: 1px; }
+            .card-bio  { font-size: 8px; }
 
-            .vdivider { height: 20px; }
+            .vdivider { height: 24px; }
 
-            .socials { gap: 10px; }
+            .socials { gap: 13px; }
 
-            .social-btn { font-size: 12px; width: 13px; height: 13px; }
-            .social-btn img { width: 12px; height: 12px; }
+            .social-btn { font-size: 18px; width: 20px; height: 20px; }
+            .social-btn img { width: 18px; height: 18px; }
         }
     </style>
 </head>
@@ -566,48 +577,38 @@
             }, 480);
         });
 
-        /* ── CARD TILT (mouse) ── */
+        /* ── CARD TILT / FLOAT ── */
         const card = document.getElementById('card');
-        let tx = 0, ty = 0, cx = 0, cy = 0;
+        const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-        card.style.willChange = 'transform';
-        card.style.backfaceVisibility = 'hidden';
+        if (isTouch) {
+            /* Mobile: gentle floating animation, no tilt */
+            card.classList.add('floating');
+        } else {
+            /* Desktop: mouse tilt with capped angles */
+            let tx = 0, ty = 0, cx = 0, cy = 0;
+            const MAX_X = 10, MAX_Y = 13;
 
-        function tiltLoop() {
-            cx += (tx - cx) * 0.095;
-            cy += (ty - cy) * 0.095;
-            card.style.transform = `perspective(1400px) rotateX(${cx}deg) rotateY(${cy}deg)`;
-            requestAnimationFrame(tiltLoop);
+            card.style.willChange = 'transform';
+            card.style.backfaceVisibility = 'hidden';
+
+            function tiltLoop() {
+                cx += (tx - cx) * 0.095;
+                cy += (ty - cy) * 0.095;
+                card.style.transform = `perspective(1400px) rotateX(${cx}deg) rotateY(${cy}deg)`;
+                requestAnimationFrame(tiltLoop);
+            }
+            tiltLoop();
+
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                const rawX = -((e.clientY - r.top)  / r.height - 0.5) * 16;
+                const rawY =  ((e.clientX - r.left) / r.width  - 0.5) * 22;
+                tx = Math.max(-MAX_X, Math.min(MAX_X, rawX));
+                ty = Math.max(-MAX_Y, Math.min(MAX_Y, rawY));
+            });
+            card.addEventListener('mouseleave', () => { tx = 0; ty = 0; });
         }
-        tiltLoop();
-
-        card.addEventListener('mousemove', e => {
-            const r = card.getBoundingClientRect();
-            tx = -((e.clientY - r.top)  / r.height - 0.5) * 16;
-            ty =  ((e.clientX - r.left) / r.width  - 0.5) * 22;
-        });
-        card.addEventListener('mouseleave', () => { tx = 0; ty = 0; });
-
-        /* ── TOUCH TILT ── */
-        let touchActive = false;
-
-        card.addEventListener('touchstart', e => {
-            touchActive = true;
-            const t = e.touches[0];
-            const r = card.getBoundingClientRect();
-            tx = -((t.clientY - r.top)  / r.height - 0.5) * 14;
-            ty =  ((t.clientX - r.left) / r.width  - 0.5) * 18;
-        }, { passive: true });
-
-        card.addEventListener('touchmove', e => {
-            if (!touchActive) return;
-            const t = e.touches[0];
-            const r = card.getBoundingClientRect();
-            tx = -((t.clientY - r.top)  / r.height - 0.5) * 14;
-            ty =  ((t.clientX - r.left) / r.width  - 0.5) * 18;
-        }, { passive: true });
-
-        card.addEventListener('touchend', () => { touchActive = false; tx = 0; ty = 0; });
 
         /* ── VOLUME ── */
         const volBtn        = document.getElementById('vol-btn');
