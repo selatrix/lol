@@ -1113,7 +1113,8 @@
             const word = 'spoiled';
             let i = 0, deleting = false;
             function tick() {
-                document.title = word.slice(0, i) + (i % 2 === 0 && !deleting ? '|' : '');
+                const base = word.slice(0, i);
+                document.title = base.length === 0 ? '\u00B7' : base + (i % 2 === 0 && !deleting ? '|' : '');
                 if (!deleting) {
                     if (i < word.length) { i++; setTimeout(tick, 110); }
                     else { deleting = true; setTimeout(tick, 1400); }
