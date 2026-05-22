@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>s3lf</title>
+    <script>
+        (function(){
+            var p = new URLSearchParams(location.search);
+            if (p.has('r')) { history.replaceState(null,'',location.pathname); }
+            else { location.replace((Math.random()<0.5?'/purged/':'/spoiled/')+'?r=1'); }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -121,20 +128,20 @@
         /* CARD — horizontal pill */
         .card {
             width: 100%;
-            max-width: 380px;
+            max-width: 370px;
             background: rgba(10,10,10,0.82);
-            border: 1px solid rgba(80,80,80,0.25);
+            border: 1px solid rgba(90,90,90,0.26);
             border-radius: 16px;
-            padding: 12px 16px;
+            padding: 11px 14px;
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
             box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.03),
+                inset 0 1px 0 rgba(255,255,255,0.04),
                 0 20px 50px -10px rgba(0,0,0,0.9);
             will-change: transform;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         /* PFP */
@@ -144,13 +151,13 @@
         }
 
         .pfp {
-            width: 44px;
-            height: 44px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
             display: block;
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.7);
+            border: none;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.75);
         }
 
         .status-dot {
@@ -177,15 +184,16 @@
 
         .card-name {
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: 0.3px;
-            background: linear-gradient(135deg, #ffffff 0%, rgba(210,215,230,0.9) 100%);
+            background: linear-gradient(135deg, #ffffff 0%, rgba(230,232,245,0.95) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1.2;
             margin-bottom: 2px;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.12));
         }
 
         .card-bio {
@@ -220,12 +228,12 @@
             background: none;
             border: none;
             color: rgba(255,255,255,0.28);
-            font-size: 18px;
+            font-size: 21px;
             text-decoration: none;
             cursor: pointer;
             transition: color 0.2s ease, transform 0.18s ease;
-            width: 20px;
-            height: 20px;
+            width: 23px;
+            height: 23px;
             line-height: 1;
         }
 
@@ -236,8 +244,8 @@
         }
 
         .social-btn img {
-            width: 18px;
-            height: 18px;
+            width: 21px;
+            height: 21px;
             object-fit: contain;
             pointer-events: none;
             -webkit-user-drag: none;
@@ -389,23 +397,23 @@
         /* MOBILE */
         @media (max-width: 540px) {
             .card {
-                padding: 10px 14px;
-                max-width: 300px;
-                border-radius: 14px;
-                gap: 10px;
+                padding: 9px 12px;
+                max-width: 272px;
+                border-radius: 13px;
+                gap: 8px;
             }
 
-            .pfp { width: 38px; height: 38px; }
+            .pfp { width: 34px; height: 34px; }
 
-            .card-name { font-size: 14px; }
-            .card-bio  { font-size: 8px; }
+            .card-name { font-size: 13px; }
+            .card-bio  { font-size: 7.5px; }
 
-            .vdivider { height: 24px; }
+            .vdivider { height: 20px; }
 
-            .socials { gap: 12px; }
+            .socials { gap: 10px; }
 
-            .social-btn { font-size: 13px; width: 14px; height: 14px; }
-            .social-btn img { width: 13px; height: 13px; }
+            .social-btn { font-size: 12px; width: 13px; height: 13px; }
+            .social-btn img { width: 12px; height: 12px; }
         }
     </style>
 </head>
@@ -418,7 +426,7 @@
     <!-- ENTER -->
     <div id="enter-screen">
         <div class="enter-ring"></div>
-        <p class="enter-label">tap to enter</p>
+        <p class="enter-label">click on it or smth</p>
     </div>
 
     <!-- MAIN -->
@@ -566,17 +574,17 @@
         card.style.backfaceVisibility = 'hidden';
 
         function tiltLoop() {
-            cx += (tx - cx) * 0.07;
-            cy += (ty - cy) * 0.07;
-            card.style.transform = `perspective(1800px) rotateX(${cx}deg) rotateY(${cy}deg)`;
+            cx += (tx - cx) * 0.095;
+            cy += (ty - cy) * 0.095;
+            card.style.transform = `perspective(1400px) rotateX(${cx}deg) rotateY(${cy}deg)`;
             requestAnimationFrame(tiltLoop);
         }
         tiltLoop();
 
         card.addEventListener('mousemove', e => {
             const r = card.getBoundingClientRect();
-            tx = -((e.clientY - r.top)  / r.height - 0.5) * 12;
-            ty =  ((e.clientX - r.left) / r.width  - 0.5) * 16;
+            tx = -((e.clientY - r.top)  / r.height - 0.5) * 16;
+            ty =  ((e.clientX - r.left) / r.width  - 0.5) * 22;
         });
         card.addEventListener('mouseleave', () => { tx = 0; ty = 0; });
 
