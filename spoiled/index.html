@@ -257,6 +257,22 @@
             transform: translateY(-2px);
         }
 
+        /* ROBLOX CUSTOM IMAGE ICON */
+        .roblox-img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            display: block;
+            filter: brightness(0) invert(1);
+            opacity: 0.28;
+            transition: opacity 0.2s ease;
+        }
+
+        .social-btn:hover .roblox-img,
+        .social-btn:active .roblox-img {
+            opacity: 0.75;
+        }
+
         /* INSTAGRAM MODAL */
         #insta-modal {
             position: fixed;
@@ -624,6 +640,51 @@
 
         .ctx-item:hover i { opacity: 1; }
 
+        /* DESKTOP POLISH */
+        @media (min-width: 541px) {
+            .card {
+                max-width: 420px;
+                padding: 13px 18px;
+                border-radius: 18px;
+                gap: 12px;
+                border-color: rgba(110,110,110,0.22);
+            }
+
+            .pfp {
+                width: 56px;
+                height: 56px;
+            }
+
+            .card-name {
+                font-size: 20px;
+            }
+
+            .vdivider {
+                height: 32px;
+            }
+
+            .socials {
+                gap: 18px;
+            }
+
+            .social-btn {
+                font-size: 21px;
+                width: 26px;
+                height: 26px;
+            }
+
+            .social-btn i {
+                font-size: 21px;
+                width: 21px;
+                height: 21px;
+            }
+
+            .roblox-img {
+                width: 21px;
+                height: 21px;
+            }
+        }
+
         /* MOBILE */
         @media (max-width: 540px) {
             .card {
@@ -644,6 +705,8 @@
 
             .social-btn { font-size: 18px; width: 22px; height: 22px; }
             .social-btn i { font-size: 18px; width: 18px; height: 18px; }
+
+            .roblox-img { width: 18px; height: 18px; }
         }
     </style>
 </head>
@@ -680,7 +743,7 @@
                     <i class="fa-brands fa-discord"></i>
                 </a>
                 <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-btn" title="Roblox">
-                    <i class="fa-brands fa-roblox"></i>
+                    <img src="https://cdn.discordapp.com/attachments/1470693318697422929/1507219874022297721/fb1c35476a849b97bdc8a366d6388601-removebg-preview_-_Copie.png?ex=6a111b64&is=6a0fc9e4&hm=cc306615eda31ec5ce223fc34f4ac659b48e7581f26f011853f10386fdf41931&" class="roblox-img" alt="Roblox" draggable="false">
                 </a>
                 <a href="#" id="insta-btn" class="social-btn" title="Instagram">
                     <i class="fa-brands fa-instagram"></i>
