@@ -17,6 +17,8 @@
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+        * { cursor: url(https://r2.guns.lol/088628a9-9e72-4674-a07b-773127a8d13a.png) 16 16, auto !important; }
+
         :root {
             --bg: #060608;
         }
@@ -138,6 +140,7 @@
             box-shadow:
                 inset 0 1px 0 rgba(255,255,255,0.04),
                 0 20px 50px -10px rgba(0,0,0,0.9);
+            animation: borderGlow 5s ease-in-out infinite;
             will-change: transform;
             display: flex;
             align-items: center;
@@ -228,35 +231,29 @@
             background: none;
             border: none;
             color: rgba(255,255,255,0.28);
-            font-size: 21px;
+            font-size: 20px;
             text-decoration: none;
             cursor: pointer;
             transition: color 0.2s ease, transform 0.18s ease;
-            width: 23px;
-            height: 23px;
+            width: 24px;
+            height: 24px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .social-btn i {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             line-height: 1;
         }
 
         .social-btn:hover,
         .social-btn:active {
             color: rgba(255,255,255,0.75);
-            transform: translateY(-2px);
-        }
-
-        .social-btn img {
-            width: 21px;
-            height: 21px;
-            object-fit: contain;
-            pointer-events: none;
-            -webkit-user-drag: none;
-            opacity: 0.28;
-            transition: opacity 0.2s ease, transform 0.18s ease;
-            display: block;
-        }
-
-        .social-btn:hover img,
-        .social-btn:active img {
-            opacity: 0.75;
             transform: translateY(-2px);
         }
 
@@ -394,6 +391,12 @@
             display: block;
         }
 
+        /* BORDER GLOW PULSE */
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 20px 50px -10px rgba(0,0,0,0.9); }
+            50%       { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 20px 50px -10px rgba(0,0,0,0.9), 0 0 18px 3px rgba(255,255,255,0.09); }
+        }
+
         /* FLOAT ANIMATION (mobile) */
         @keyframes floatCard {
             0%, 100% { transform: translateY(0px); }
@@ -401,9 +404,225 @@
         }
 
         .card.floating {
-            animation: floatCard 3.6s ease-in-out infinite;
+            animation: floatCard 3.6s ease-in-out infinite, borderGlow 5s ease-in-out infinite;
             will-change: transform;
         }
+
+        /* ACTIVITY OVERLAY */
+        #activity-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        #activity-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .activity-card {
+            background: rgba(8,8,8,0.96);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 18px 20px;
+            min-width: 220px;
+            max-width: 280px;
+            box-shadow: 0 24px 60px -12px rgba(0,0,0,0.95);
+            transform: translateY(10px) scale(0.97);
+            transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        #activity-overlay.show .activity-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .act-label {
+            font-size: 8.5px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.18);
+            margin-bottom: 12px;
+        }
+
+        .act-status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .act-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: #333;
+        }
+        .act-dot.online  { background: #666; }
+        .act-dot.idle    { background: #444; }
+        .act-dot.dnd     { background: #3a3a3a; }
+
+        .act-status-text {
+            font-size: 11px;
+            color: rgba(255,255,255,0.38);
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        .act-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.04);
+            margin: 10px 0;
+        }
+
+        .act-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .act-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+            opacity: 0.85;
+        }
+
+        .act-icon-placeholder {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.04);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.12);
+            font-size: 13px;
+        }
+
+        .act-info { flex: 1; min-width: 0; }
+
+        .act-name {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .act-detail {
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
+        }
+
+        .act-empty {
+            font-size: 11px;
+            color: rgba(255,255,255,0.18);
+            font-style: italic;
+            text-align: center;
+            padding: 4px 0;
+        }
+
+        .act-close {
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        .act-close-btn {
+            background: none;
+            border: none;
+            font-size: 10px;
+            color: rgba(255,255,255,0.18);
+            cursor: pointer;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: color 0.2s ease;
+            padding: 4px 8px;
+        }
+
+        .act-close-btn:hover { color: rgba(255,255,255,0.45); }
+
+        /* RIGHT-CLICK MENU */
+        #ctx-menu {
+            position: fixed;
+            z-index: 200;
+            background: rgba(10,10,10,0.96);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 5px;
+            min-width: 160px;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.95) translateY(4px);
+            transition: opacity 0.18s cubic-bezier(0.4,0,0.2,1),
+                        transform 0.18s cubic-bezier(0.4,0,0.2,1);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 16px 40px -8px rgba(0,0,0,0.9);
+        }
+
+        #ctx-menu.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: scale(1) translateY(0);
+        }
+
+        .ctx-header {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.2);
+            padding: 6px 10px 5px;
+        }
+
+        .ctx-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.05);
+            margin: 3px 0;
+        }
+
+        .ctx-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.55);
+            cursor: pointer;
+            transition: background 0.12s ease, color 0.12s ease;
+            white-space: nowrap;
+        }
+
+        .ctx-item i { font-size: 11px; width: 13px; text-align: center; opacity: 0.7; }
+
+        .ctx-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .ctx-item:hover i { opacity: 1; }
 
         /* MOBILE */
         @media (max-width: 540px) {
@@ -423,8 +642,8 @@
 
             .socials { gap: 13px; }
 
-            .social-btn { font-size: 18px; width: 20px; height: 20px; }
-            .social-btn img { width: 18px; height: 18px; }
+            .social-btn { font-size: 18px; width: 22px; height: 22px; }
+            .social-btn i { font-size: 18px; width: 18px; height: 18px; }
         }
     </style>
 </head>
@@ -461,7 +680,7 @@
                     <i class="fa-brands fa-discord"></i>
                 </a>
                 <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-btn" title="Roblox">
-                    <img src="https://files.catbox.moe/q4jtcq.gif" alt="Roblox">
+                    <i class="fa-brands fa-roblox"></i>
                 </a>
                 <a href="#" id="insta-btn" class="social-btn" title="Instagram">
                     <i class="fa-brands fa-instagram"></i>
@@ -484,6 +703,28 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    <!-- ACTIVITY OVERLAY -->
+    <div id="activity-overlay">
+        <div class="activity-card">
+            <div class="act-label">activity</div>
+            <div class="act-status-row">
+                <div class="act-dot" id="act-dot"></div>
+                <div class="act-status-text" id="act-status-text">offline</div>
+            </div>
+            <div class="act-divider"></div>
+            <div id="act-body"></div>
+            <div class="act-close"><button class="act-close-btn" id="act-close-btn">dismiss</button></div>
+        </div>
+    </div>
+
+    <!-- RIGHT-CLICK MENU -->
+    <div id="ctx-menu">
+        <div class="ctx-header">s3lf</div>
+        <div class="ctx-divider"></div>
+        <div class="ctx-item" id="ctx-copy-dc"><i class="fa-brands fa-discord"></i> Copy Discord</div>
+        <div class="ctx-item" id="ctx-view-dc"><i class="fa-solid fa-satellite-dish"></i> View Activity</div>
     </div>
 
     <!-- VOLUME -->
@@ -582,28 +823,27 @@
         const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
         if (isTouch) {
-            /* Mobile: gentle floating animation, no tilt */
             card.classList.add('floating');
         } else {
-            /* Desktop: mouse tilt with capped angles */
             let tx = 0, ty = 0, cx = 0, cy = 0;
-            const MAX_X = 10, MAX_Y = 13;
+            const MAX_X = 14, MAX_Y = 18;
+            const LERP  = 0.065;
 
             card.style.willChange = 'transform';
             card.style.backfaceVisibility = 'hidden';
 
             function tiltLoop() {
-                cx += (tx - cx) * 0.095;
-                cy += (ty - cy) * 0.095;
-                card.style.transform = `perspective(1400px) rotateX(${cx}deg) rotateY(${cy}deg)`;
+                cx += (tx - cx) * LERP;
+                cy += (ty - cy) * LERP;
+                card.style.transform = `perspective(900px) rotateX(${cx}deg) rotateY(${cy}deg) scale3d(1.012,1.012,1.012)`;
                 requestAnimationFrame(tiltLoop);
             }
             tiltLoop();
 
             card.addEventListener('mousemove', e => {
                 const r = card.getBoundingClientRect();
-                const rawX = -((e.clientY - r.top)  / r.height - 0.5) * 16;
-                const rawY =  ((e.clientX - r.left) / r.width  - 0.5) * 22;
+                const rawX = -((e.clientY - r.top)  / r.height - 0.5) * 26;
+                const rawY =  ((e.clientX - r.left) / r.width  - 0.5) * 34;
                 tx = Math.max(-MAX_X, Math.min(MAX_X, rawX));
                 ty = Math.max(-MAX_Y, Math.min(MAX_Y, rawY));
             });
@@ -678,6 +918,168 @@
         }
 
         setInterval(updateDiscord, 15000);
+
+        /* ── RIGHT-CLICK MENU ── */
+        const ctxMenu = document.getElementById('ctx-menu');
+        let ctxTimer;
+
+        function closeCtx() {
+            ctxMenu.classList.remove('show');
+        }
+
+        document.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            clearTimeout(ctxTimer);
+            closeCtx();
+
+            const vw = window.innerWidth, vh = window.innerHeight;
+            let l = e.clientX + 6, t = e.clientY + 6;
+            requestAnimationFrame(() => {
+                const mw = ctxMenu.offsetWidth, mh = ctxMenu.offsetHeight;
+                if (l + mw > vw - 8) l = e.clientX - mw - 6;
+                if (t + mh > vh - 8) t = e.clientY - mh - 6;
+                ctxMenu.style.left = l + 'px';
+                ctxMenu.style.top  = t + 'px';
+                ctxMenu.classList.add('show');
+                ctxTimer = setTimeout(closeCtx, 3200);
+            });
+        });
+
+        document.addEventListener('click', () => closeCtx());
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCtx(); });
+
+        document.getElementById('ctx-copy-dc').addEventListener('click', () => {
+            navigator.clipboard.writeText('discord.com/users/396352442507198465').catch(() => {});
+            closeCtx();
+        });
+
+        /* ── ACTIVITY OVERLAY ── */
+        const actOverlay  = document.getElementById('activity-overlay');
+        const actDot      = document.getElementById('act-dot');
+        const actStatusTx = document.getElementById('act-status-text');
+        const actBody     = document.getElementById('act-body');
+
+        function closeActivity() {
+            actOverlay.classList.remove('show');
+            setTimeout(() => { actOverlay.style.display = 'none'; }, 460);
+        }
+
+        document.getElementById('act-close-btn').addEventListener('click', closeActivity);
+        actOverlay.addEventListener('click', e => { if (e.target === actOverlay) closeActivity(); });
+
+        async function showActivity() {
+            closeCtx();
+            actBody.innerHTML = '<div class="act-empty">fetching…</div>';
+            actDot.className  = 'act-dot';
+            actStatusTx.textContent = '—';
+            actOverlay.style.display = 'flex';
+            requestAnimationFrame(() => requestAnimationFrame(() => actOverlay.classList.add('show')));
+
+            try {
+                const res  = await fetch(`https://api.lanyard.rest/v1/users/396352442507198465`, { cache: 'no-store' });
+                const json = await res.json();
+                if (!json.success) throw new Error();
+
+                const d      = json.data;
+                const status = d.discord_status || 'offline';
+                const labels = { online: 'online', idle: 'idle', dnd: 'do not disturb', offline: 'offline' };
+
+                actDot.className      = 'act-dot ' + status;
+                actStatusTx.textContent = labels[status] || status;
+
+                const acts = d.activities || [];
+                const act  = acts.find(a => a.type !== 4) || null;
+                const custom = acts.find(a => a.type === 4);
+
+                let html = '';
+
+                if (custom && custom.state) {
+                    html += `<div class="act-row" style="margin-bottom:${act ? '10px' : '0'}">
+                        <div class="act-icon-placeholder"><i class="fa-regular fa-comment"></i></div>
+                        <div class="act-info">
+                            <div class="act-detail" style="font-style:italic;">"${custom.state}"</div>
+                        </div>
+                    </div>`;
+                }
+
+                if (act) {
+                    const imgUrl = act.assets?.large_image
+                        ? (act.assets.large_image.startsWith('mp:')
+                            ? 'https://media.discordapp.net/' + act.assets.large_image.replace('mp:','')
+                            : `https://cdn.discordapp.com/app-assets/${act.application_id}/${act.assets.large_image}.png`)
+                        : null;
+
+                    const iconHtml = imgUrl
+                        ? `<img class="act-icon" src="${imgUrl}" alt="">`
+                        : `<div class="act-icon-placeholder"><i class="fa-solid fa-gamepad"></i></div>`;
+
+                    const detail  = act.details || '';
+                    const state   = act.state   || '';
+
+                    html += `<div class="act-row">
+                        ${iconHtml}
+                        <div class="act-info">
+                            <div class="act-name">${act.name}</div>
+                            ${detail ? `<div class="act-detail">${detail}</div>` : ''}
+                            ${state  ? `<div class="act-detail">${state}</div>`  : ''}
+                        </div>
+                    </div>`;
+                }
+
+                if (!html) html = '<div class="act-empty">nothing going on</div>';
+                actBody.innerHTML = html;
+
+            } catch(e) {
+                actBody.innerHTML = '<div class="act-empty">couldn\'t load</div>';
+            }
+        }
+
+        document.getElementById('ctx-view-dc').addEventListener('click', showActivity);
+
+        /* ── CURSOR TRAIL ── */
+        (function() {
+            if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
+
+            const TRAIL_LEN = 18;
+            const trail = [];
+
+            for (let i = 0; i < TRAIL_LEN; i++) {
+                const dot = document.createElement('div');
+                const size = Math.max(2, 5 - i * 0.18);
+                dot.style.cssText = `
+                    position: fixed;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 9999;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: rgba(255,255,255,${0.55 - i * 0.028});
+                    transform: translate(-50%, -50%);
+                    transition: opacity 0.12s ease;
+                    will-change: transform;
+                    left: -999px; top: -999px;
+                `;
+                document.body.appendChild(dot);
+                trail.push({ el: dot, x: -999, y: -999 });
+            }
+
+            let mx = -999, my = -999;
+            document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+            function trailLoop() {
+                let px = mx, py = my;
+                for (let i = 0; i < TRAIL_LEN; i++) {
+                    const t = trail[i];
+                    t.x += (px - t.x) * (0.45 - i * 0.018);
+                    t.y += (py - t.y) * (0.45 - i * 0.018);
+                    t.el.style.left = t.x + 'px';
+                    t.el.style.top  = t.y + 'px';
+                    px = t.x; py = t.y;
+                }
+                requestAnimationFrame(trailLoop);
+            }
+            trailLoop();
+        })();
     </script>
 </body>
 </html>
