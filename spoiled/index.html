@@ -27,7 +27,12 @@
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        * { cursor: url(https://r2.guns.lol/088628a9-9e72-4674-a07b-773127a8d13a.png) 16 16, auto !important; }
+        * {
+            cursor: url(https://r2.guns.lol/088628a9-9e72-4674-a07b-773127a8d13a.png) 16 16, auto !important;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
 
         :root {
             --bg: #060608;
@@ -597,10 +602,14 @@
             padding: 5px;
             min-width: 160px;
             pointer-events: none;
+            visibility: hidden;
             opacity: 0;
-            transform: scale(0.95) translateY(4px);
-            transition: opacity 0.18s cubic-bezier(0.4,0,0.2,1),
-                        transform 0.18s cubic-bezier(0.4,0,0.2,1);
+            transform: scale(0.92) translateY(8px);
+            filter: blur(3px);
+            transition: opacity 0.22s ease,
+                        transform 0.22s ease,
+                        filter 0.22s ease,
+                        visibility 0s linear 0.22s;
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             box-shadow: 0 16px 40px -8px rgba(0,0,0,0.9);
@@ -608,8 +617,14 @@
 
         #ctx-menu.show {
             opacity: 1;
+            visibility: visible;
             pointer-events: all;
             transform: scale(1) translateY(0);
+            filter: blur(0px);
+            transition: opacity 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+                        visibility 0s linear 0s;
         }
 
         .ctx-header {
@@ -727,7 +742,7 @@
     <audio id="bg-audio" loop src="https://file.garden/advUdw57_HghQzKi/4c13e99f-df62-4655-99ff-890b2398a0f5.mp3"></audio>
 
     <!-- ENTER -->
-    <div id="enter-screen">
+    <div id="enter-screen" oncontextmenu="return false;">
         <div class="enter-ring"></div>
         <p class="enter-label">click on it or smth</p>
     </div>
@@ -796,7 +811,7 @@
     <div id="ctx-menu">
         <div class="ctx-header">s3lf</div>
         <div class="ctx-divider"></div>
-        <div class="ctx-item" id="ctx-copy-dc"><i class="fa-brands fa-discord"></i> Copy Discord</div>
+        <div class="ctx-item" id="ctx-copy-dc"><i class="fa-brands fa-discord"></i> Copy User ID</div>
         <div class="ctx-item" id="ctx-view-dc"><i class="fa-solid fa-satellite-dish"></i> View Activity</div>
     </div>
 
@@ -878,18 +893,19 @@
         const enterScreen = document.getElementById('enter-screen');
         const mainContent = document.getElementById('main-content');
         const bgAudio     = document.getElementById('bg-audio');
-
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
             setTimeout(() => {
                 enterScreen.style.display = 'none';
                 mainContent.style.display = 'flex';
                 requestAnimationFrame(() => requestAnimationFrame(() => mainContent.classList.add('visible')));
-                bgAudio.volume = 0.65;
+                bgAudio.volume = 0;
                 bgAudio.play().catch(() => {});
+                fadeAudio(parseFloat(volSlider.value) || 0.65, 1600);
                 updateDiscord();
+                setTimeout(initCtxMenu, 800);
             }, 480);
-        });
+        }, { once: true });
 
         /* ── CARD TILT / FLOAT ── */
         const card = document.getElementById('card');
@@ -962,16 +978,34 @@
         const instaModal = document.getElementById('insta-modal');
         const instaVideo = document.getElementById('insta-video');
 
+        let _fadeTimer = null;
+        function fadeAudio(target, duration) {
+            duration = duration || 380;
+            clearInterval(_fadeTimer);
+            const start = bgAudio.volume;
+            const diff  = target - start;
+            const steps = 24;
+            const delay = duration / steps;
+            let step = 0;
+            _fadeTimer = setInterval(() => {
+                step++;
+                bgAudio.volume = Math.max(0, Math.min(1, start + diff * (step / steps)));
+                if (step >= steps) clearInterval(_fadeTimer);
+            }, delay);
+        }
+
         document.getElementById('insta-btn').addEventListener('click', e => {
             e.preventDefault();
             instaModal.style.display = 'flex';
             requestAnimationFrame(() => requestAnimationFrame(() => instaModal.classList.add('show')));
             instaVideo.play().catch(() => {});
+            fadeAudio(0);
         });
 
         function closeInsta() {
             instaModal.classList.remove('show');
             instaVideo.pause();
+            fadeAudio(parseFloat(volSlider.value));
             setTimeout(() => { instaModal.style.display = 'none'; }, 320);
         }
 
@@ -1000,29 +1034,33 @@
             ctxMenu.classList.remove('show');
         }
 
-        document.addEventListener('contextmenu', e => {
-            e.preventDefault();
-            clearTimeout(ctxTimer);
-            closeCtx();
+        function initCtxMenu() {
+            document.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                clearTimeout(ctxTimer);
+                closeCtx();
 
-            const vw = window.innerWidth, vh = window.innerHeight;
-            let l = e.clientX + 6, t = e.clientY + 6;
-            requestAnimationFrame(() => {
-                const mw = ctxMenu.offsetWidth, mh = ctxMenu.offsetHeight;
-                if (l + mw > vw - 8) l = e.clientX - mw - 6;
-                if (t + mh > vh - 8) t = e.clientY - mh - 6;
-                ctxMenu.style.left = l + 'px';
-                ctxMenu.style.top  = t + 'px';
-                ctxMenu.classList.add('show');
-                ctxTimer = setTimeout(closeCtx, 3200);
+                const vw = window.innerWidth, vh = window.innerHeight;
+                let l = e.clientX + 6, t = e.clientY + 6;
+                requestAnimationFrame(() => {
+                    const mw = ctxMenu.offsetWidth, mh = ctxMenu.offsetHeight;
+                    if (l + mw > vw - 8) l = e.clientX - mw - 6;
+                    if (t + mh > vh - 8) t = e.clientY - mh - 6;
+                    ctxMenu.style.left = l + 'px';
+                    ctxMenu.style.top  = t + 'px';
+                    ctxMenu.classList.add('show');
+                    ctxTimer = setTimeout(closeCtx, 3200);
+                });
             });
-        });
 
-        document.addEventListener('click', () => closeCtx());
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCtx(); });
+            document.addEventListener('click', () => closeCtx());
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCtx(); });
+        }
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
 
         document.getElementById('ctx-copy-dc').addEventListener('click', () => {
-            navigator.clipboard.writeText('discord.com/users/396352442507198465').catch(() => {});
+            navigator.clipboard.writeText('396352442507198465').catch(() => {});
             closeCtx();
         });
 
@@ -1060,14 +1098,14 @@
                 actDot.className      = 'act-dot ' + status;
                 actStatusTx.textContent = labels[status] || status;
 
-                const acts = d.activities || [];
-                const act  = acts.find(a => a.type !== 4) || null;
+                const acts   = d.activities || [];
                 const custom = acts.find(a => a.type === 4);
+                const nonSpotifyAct = acts.find(a => a.type !== 4 && a.name !== 'Spotify') || null;
 
                 let html = '';
 
                 if (custom && custom.state) {
-                    html += `<div class="act-row" style="margin-bottom:${act ? '10px' : '0'}">
+                    html += `<div class="act-row" style="margin-bottom:${(d.spotify || nonSpotifyAct) ? '10px' : '0'}">
                         <div class="act-icon-placeholder"><i class="fa-regular fa-comment"></i></div>
                         <div class="act-info">
                             <div class="act-detail" style="font-style:italic;">"${custom.state}"</div>
@@ -1075,26 +1113,39 @@
                     </div>`;
                 }
 
-                if (act) {
-                    const imgUrl = act.assets?.large_image
-                        ? (act.assets.large_image.startsWith('mp:')
-                            ? 'https://media.discordapp.net/' + act.assets.large_image.replace('mp:','')
-                            : `https://cdn.discordapp.com/app-assets/${act.application_id}/${act.assets.large_image}.png`)
-                        : null;
+                if (d.spotify) {
+                    const rawArt = d.spotify.album_art_url || '';
+                    const artSrc = rawArt ? `https://wsrv.nl/?url=${encodeURIComponent(rawArt)}&w=68&h=68&output=jpg` : '';
+                    html += `<div class="act-row">
+                        ${artSrc
+                            ? `<img class="act-icon" src="${artSrc}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.outerHTML='<div class=\\'act-icon-placeholder\\'><i class=\\'fa-solid fa-music\\'></i></div>'">`
+                            : `<div class="act-icon-placeholder"><i class="fa-solid fa-music"></i></div>`
+                        }
+                        <div class="act-info">
+                            <div class="act-name">Spotify</div>
+                            <div class="act-detail">${d.spotify.song}</div>
+                            <div class="act-detail" style="opacity:0.6">${d.spotify.artist}</div>
+                        </div>
+                    </div>`;
+                } else if (nonSpotifyAct) {
+                    let imgUrl = null;
+                    const li = nonSpotifyAct.assets?.large_image || '';
+                    if (li.startsWith('mp:')) {
+                        imgUrl = 'https://media.discordapp.net/' + li.replace('mp:', '');
+                    } else if (li && !li.startsWith('spotify:')) {
+                        imgUrl = `https://cdn.discordapp.com/app-assets/${nonSpotifyAct.application_id}/${li}.png`;
+                    }
 
                     const iconHtml = imgUrl
-                        ? `<img class="act-icon" src="${imgUrl}" alt="">`
+                        ? `<img class="act-icon" src="${imgUrl}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="act-icon-placeholder" style="display:none"><i class="fa-solid fa-gamepad"></i></div>`
                         : `<div class="act-icon-placeholder"><i class="fa-solid fa-gamepad"></i></div>`;
-
-                    const detail  = act.details || '';
-                    const state   = act.state   || '';
 
                     html += `<div class="act-row">
                         ${iconHtml}
                         <div class="act-info">
-                            <div class="act-name">${act.name}</div>
-                            ${detail ? `<div class="act-detail">${detail}</div>` : ''}
-                            ${state  ? `<div class="act-detail">${state}</div>`  : ''}
+                            <div class="act-name">${nonSpotifyAct.name}</div>
+                            ${nonSpotifyAct.details ? `<div class="act-detail">${nonSpotifyAct.details}</div>` : ''}
+                            ${nonSpotifyAct.state   ? `<div class="act-detail">${nonSpotifyAct.state}</div>`   : ''}
                         </div>
                     </div>`;
                 }
@@ -1112,18 +1163,32 @@
         /* ── TITLE ANIMATION ── */
         (function() {
             const word = 'spoiled';
-            let i = 0, deleting = false;
+            let i = 0, deleting = false, away = false, tid;
+
             function tick() {
+                if (away) return;
                 const base = word.slice(0, i);
                 document.title = base.length === 0 ? '\u00B7' : base + (i % 2 === 0 && !deleting ? '|' : '');
                 if (!deleting) {
-                    if (i < word.length) { i++; setTimeout(tick, 110); }
-                    else { deleting = true; setTimeout(tick, 1400); }
+                    if (i < word.length) { i++; tid = setTimeout(tick, 110); }
+                    else { deleting = true; tid = setTimeout(tick, 1400); }
                 } else {
-                    if (i > 0) { i--; setTimeout(tick, 70); }
-                    else { deleting = false; setTimeout(tick, 500); }
+                    if (i > 0) { i--; tid = setTimeout(tick, 70); }
+                    else { deleting = false; tid = setTimeout(tick, 500); }
                 }
             }
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    away = true;
+                    clearTimeout(tid);
+                    document.title = 'yearning';
+                } else {
+                    away = false;
+                    tick();
+                }
+            });
+
             tick();
         })();
 
