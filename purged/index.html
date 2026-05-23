@@ -914,6 +914,7 @@
 
     <div id="ctx-popup">by <strong style="color:rgba(255,255,255,0.7);font-weight:600;">s3lf</strong></div>
 
+    <div id="tab-fade"></div>
     <script>
         /* ── VARIANT SELECTION (random on load) ── */
         document.body.classList.add(Math.random() < 0.5 ? 'var-a' : 'var-b');
@@ -1089,21 +1090,40 @@
         const instaModal = document.getElementById('insta-modal');
         const instaVideo = document.getElementById('insta-video');
 
+        let _instaVolTimer;
+        function fadeInstaVol(to, ms) {
+            clearInterval(_instaVolTimer);
+            const from  = instaVideo.volume;
+            const diff  = to - from;
+            const steps = Math.max(1, Math.round(ms / 20));
+            let s = 0;
+            _instaVolTimer = setInterval(() => {
+                s++;
+                instaVideo.volume = Math.min(1, Math.max(0, from + diff * (s / steps)));
+                if (s >= steps) { instaVideo.volume = to; clearInterval(_instaVolTimer); }
+            }, 20);
+        }
+
         document.getElementById('insta-btn').addEventListener('click', e => {
             e.preventDefault();
             bgVideo.style.transition = 'opacity 0.3s';
             bgVideo.style.opacity = '0';
             setTimeout(() => bgVideo.pause(), 300);
+            instaVideo.volume = 0;
             instaVideo.classList.remove('vid-show');
             instaModal.style.display = 'flex';
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 instaModal.classList.add('show');
-                setTimeout(() => instaVideo.classList.add('vid-show'), 80);
+                setTimeout(() => {
+                    instaVideo.classList.add('vid-show');
+                    fadeInstaVol(1, 500);
+                }, 80);
             }));
             instaVideo.play().catch(() => {});
         });
 
         function closeInsta() {
+            fadeInstaVol(0, 350);
             instaVideo.classList.remove('vid-show');
             setTimeout(() => {
                 instaModal.classList.remove('show');
@@ -1113,7 +1133,7 @@
                     bgVideo.style.opacity = '1';
                     bgVideo.play().catch(() => {});
                 }, 320);
-            }, 300);
+            }, 350);
         }
 
         /* ── RIGHT-CLICK POPUP ── */
@@ -1234,18 +1254,20 @@
                     _savedVol = bgVideo.volume || TARGET_VOL;
                     fadeVideoOut(1800);
                 } else {
-                    /* Fade back in to the volume the user had */
-                    clearInterval(_volFadeTimer);
-                    const target = _savedVol;
-                    const steps = 36, delay = 40;
-                    let s = 0;
-                    _volFadeTimer = setInterval(() => {
-                        s++;
-                        const p = s / steps;
-                        const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
-                        bgVideo.volume = Math.min(target, target * eased);
-                        if (s >= steps) { bgVideo.volume = target; clearInterval(_volFadeTimer); }
-                    }, delay);
+                    if (!instaModal.classList.contains('show')) {
+                        /* Fade back in to the volume the user had */
+                        clearInterval(_volFadeTimer);
+                        const target = _savedVol;
+                        const steps = 36, delay = 40;
+                        let s = 0;
+                        _volFadeTimer = setInterval(() => {
+                            s++;
+                            const p = s / steps;
+                            const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+                            bgVideo.volume = Math.min(target, target * eased);
+                            if (s >= steps) { bgVideo.volume = target; clearInterval(_volFadeTimer); }
+                        }, delay);
+                    }
                 }
             });
         })();
@@ -1256,12 +1278,13 @@
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     tabFade.classList.add('show');
+                    if (instaModal.classList.contains('show')) fadeInstaVol(0, 1200);
                 } else {
                     tabFade.classList.remove('show');
+                    if (instaModal.classList.contains('show')) fadeInstaVol(1, 1000);
                 }
             });
         })();
     </script>
-    <div id="tab-fade"></div>
 </body>
 </html>
