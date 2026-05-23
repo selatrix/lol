@@ -46,6 +46,8 @@
             color: var(--text);
             -webkit-font-smoothing: antialiased;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
             touch-action: none;
         }
 
@@ -566,6 +568,7 @@
             display: block;
         }
 
+
         /* RIGHT-CLICK POPUP */
         #ctx-popup {
             position: fixed;
@@ -580,15 +583,25 @@
             border-radius: 999px;
             white-space: nowrap;
             pointer-events: none;
+            visibility: hidden;
             opacity: 0;
-            transform: scale(0.96) translateY(4px);
-            transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+            transform: scale(0.88) translateY(8px);
+            filter: blur(4px);
+            transition: opacity 0.22s ease,
+                        transform 0.22s ease,
+                        filter 0.22s ease,
+                        visibility 0s linear 0.22s;
             backdrop-filter: blur(20px);
         }
-
         #ctx-popup.show {
             opacity: 1;
+            visibility: visible;
             transform: scale(1) translateY(0);
+            filter: blur(0px);
+            transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+                        visibility 0s linear 0s;
         }
 
         /* DESKTOP POLISH */
@@ -702,7 +715,7 @@
     <div id="bg-overlay"></div>
 
     <!-- ENTER -->
-    <div id="enter-screen">
+    <div id="enter-screen" oncontextmenu="return false;">
         <div class="enter-ring"></div>
         <p class="enter-label">click on it or smth</p>
     </div>
@@ -719,7 +732,7 @@
                 <div class="profile-info">
                     <div class="card-name">s3lf</div>
                     <div class="card-bio">social media expert</div>
-                    <div class="activity-wrap" id="activity-wrap">
+                    <div class="activity-wrap" id="activity-wrap" style="display:none">
                         <div class="activity-ring"></div>
                         <span class="activity-label">actively working</span>
                     </div>
@@ -777,7 +790,6 @@
         </div>
     </div>
 
-    <!-- CONTEXT POPUP -->
     <div id="ctx-popup">by <strong style="color:rgba(255,255,255,0.7);font-weight:600;">s3lf</strong></div>
 
     <script>
@@ -786,9 +798,9 @@
         const mainContent = document.getElementById('main-content');
         const bgVideo     = document.getElementById('bg-video');
         const VIDEO_SRC   = "https://file.garden/advUdw57_HghQzKi/AQPszTVDbxPmUUm1Oc0nb8mA3O8ZCJtJC33tTPTW9yQDpiEVc-Kue6PNrNafRqrEmDsP6T-WYGEuNlioiucFOnwH91nxHS0AUCF2Gmc.mp4";
-
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
+
             setTimeout(() => {
                 enterScreen.style.display = 'none';
                 mainContent.style.display = 'flex';
@@ -797,13 +809,14 @@
                 bgVideo.volume = 0.65;
                 bgVideo.play().catch(() => {});
                 updateDiscord();
+                setTimeout(initCtxPopup, 800);
                 setTimeout(() => {
                     const aw = document.getElementById('activity-wrap');
                     aw.classList.add('open');
                     setTimeout(() => aw.classList.remove('open'), 4200);
                 }, 900);
             }, 480);
-        });
+        }, { once: true });
 
         /* CARD TILT */
         const card = document.getElementById('card');
@@ -904,27 +917,30 @@
             }, 320);
         }
 
-        /* RIGHT-CLICK */
+        /* RIGHT-CLICK POPUP */
         const ctxPopup = document.getElementById('ctx-popup');
         let ctxTimer;
 
-        document.addEventListener('contextmenu', e => {
-            if (window.innerWidth <= 768) return false;
-            e.preventDefault();
-            if (ctxPopup.classList.contains('show')) {
+        function initCtxPopup() {
+            document.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                if (ctxPopup.classList.contains('show')) {
+                    clearTimeout(ctxTimer);
+                    ctxPopup.classList.remove('show');
+                    return;
+                }
                 clearTimeout(ctxTimer);
-                ctxPopup.classList.remove('show');
-                return;
-            }
-            clearTimeout(ctxTimer);
-            let l = e.clientX + 12, t = e.clientY + 12;
-            if (l + 160 > window.innerWidth)  l = e.clientX - 148;
-            if (t + 40  > window.innerHeight) t = e.clientY - 42;
-            ctxPopup.style.left = l + 'px';
-            ctxPopup.style.top  = t + 'px';
-            ctxPopup.classList.add('show');
-            ctxTimer = setTimeout(() => ctxPopup.classList.remove('show'), 900);
-        });
+                let l = e.clientX + 12, t = e.clientY + 12;
+                if (l + 160 > window.innerWidth)  l = e.clientX - 148;
+                if (t + 40  > window.innerHeight) t = e.clientY - 42;
+                ctxPopup.style.left = l + 'px';
+                ctxPopup.style.top  = t + 'px';
+                ctxPopup.classList.add('show');
+                ctxTimer = setTimeout(() => ctxPopup.classList.remove('show'), 900);
+            });
+        }
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
 
         /* DISCORD / LANYARD */
         const DISCORD_ID = '396352442507198465';
@@ -947,6 +963,11 @@
                 const badge  = document.getElementById('dc-badge');
                 badge.className   = 'dc-badge ' + status;
                 badge.textContent = status === 'dnd' ? 'DND' : status.charAt(0).toUpperCase() + status.slice(1);
+
+                const actWrap = document.getElementById('activity-wrap');
+                if (actWrap) {
+                    actWrap.style.display = (status === 'online' || status === 'idle' || status === 'dnd') ? '' : 'none';
+                }
 
                 const actEl = document.getElementById('dc-activity');
                 if (d.spotify) {
@@ -976,18 +997,32 @@
         /* ── TITLE ANIMATION ── */
         (function() {
             const word = 'purged';
-            let i = 0, deleting = false;
+            let i = 0, deleting = false, away = false, tid;
+
             function tick() {
+                if (away) return;
                 const base = word.slice(0, i);
                 document.title = base.length === 0 ? '\u00B7' : base + (i % 2 === 0 && !deleting ? '|' : '');
                 if (!deleting) {
-                    if (i < word.length) { i++; setTimeout(tick, 110); }
-                    else { deleting = true; setTimeout(tick, 1400); }
+                    if (i < word.length) { i++; tid = setTimeout(tick, 110); }
+                    else { deleting = true; tid = setTimeout(tick, 1400); }
                 } else {
-                    if (i > 0) { i--; setTimeout(tick, 70); }
-                    else { deleting = false; setTimeout(tick, 500); }
+                    if (i > 0) { i--; tid = setTimeout(tick, 70); }
+                    else { deleting = false; tid = setTimeout(tick, 500); }
                 }
             }
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    away = true;
+                    clearTimeout(tid);
+                    document.title = 'yearning';
+                } else {
+                    away = false;
+                    tick();
+                }
+            });
+
             tick();
         })();
     </script>
