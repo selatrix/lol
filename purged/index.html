@@ -818,6 +818,11 @@
             .dc-activity { padding-left: 36px; gap: 8px; }
             .dc-activity img { width: 26px; height: 26px; }
         }
+
+        #insta-video { opacity: 0; transition: opacity 0.45s ease; }
+        #insta-video.vid-show { opacity: 1; }
+        #tab-fade { position: fixed; inset: 0; z-index: 400; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+        #tab-fade.show { opacity: 1; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1089,19 +1094,26 @@
             bgVideo.style.transition = 'opacity 0.3s';
             bgVideo.style.opacity = '0';
             setTimeout(() => bgVideo.pause(), 300);
+            instaVideo.classList.remove('vid-show');
             instaModal.style.display = 'flex';
-            requestAnimationFrame(() => requestAnimationFrame(() => instaModal.classList.add('show')));
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                instaModal.classList.add('show');
+                setTimeout(() => instaVideo.classList.add('vid-show'), 80);
+            }));
             instaVideo.play().catch(() => {});
         });
 
         function closeInsta() {
-            instaModal.classList.remove('show');
-            instaVideo.pause();
+            instaVideo.classList.remove('vid-show');
             setTimeout(() => {
-                instaModal.style.display = 'none';
-                bgVideo.style.opacity = '1';
-                bgVideo.play().catch(() => {});
-            }, 320);
+                instaModal.classList.remove('show');
+                instaVideo.pause();
+                setTimeout(() => {
+                    instaModal.style.display = 'none';
+                    bgVideo.style.opacity = '1';
+                    bgVideo.play().catch(() => {});
+                }, 320);
+            }, 300);
         }
 
         /* ── RIGHT-CLICK POPUP ── */
@@ -1237,6 +1249,19 @@
                 }
             });
         })();
+
+        /* ── TAB VISIBILITY – VISUAL FADE ── */
+        (function () {
+            const tabFade = document.getElementById('tab-fade');
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    tabFade.classList.add('show');
+                } else {
+                    tabFade.classList.remove('show');
+                }
+            });
+        })();
     </script>
+    <div id="tab-fade"></div>
 </body>
 </html>
