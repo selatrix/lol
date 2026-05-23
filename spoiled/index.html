@@ -13,16 +13,16 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://media.discordapp.net/attachments/1470693318697422929/1507230251514593340/image0.png?ex=6a11250e&is=6a0fd38e&hm=793b30f87e1313fe09cf6c078d36f55f7ebd4119b241ca7e8e61c4f853965ef0&=&format=webp&quality=lossless">
+    <link rel="icon" type="image/png" href="https://files.catbox.moe/m42dz0.png">
     <meta property="og:title" content="can u hit me">
     <meta property="og:description" content="〉">
-    <meta property="og:image" content="https://media.discordapp.net/attachments/1470693318697422929/1507231111762153522/194E8B0F-3F3A-48FF-83D2-317865AE8F50.gif?ex=6a1125dc&is=6a0fd45c&hm=3ff674f27abab217654a723000b78fa57adf1fde1191488aca69986dd0aa007f&=">
+    <meta property="og:image" content="https://files.catbox.moe/a2qpgm.gif">
     <meta property="og:url" content="https://baited.online">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="can u hit me">
     <meta name="twitter:description" content="〉">
-    <meta name="twitter:image" content="https://media.discordapp.net/attachments/1470693318697422929/1507231111762153522/194E8B0F-3F3A-48FF-83D2-317865AE8F50.gif?ex=6a1125dc&is=6a0fd45c&hm=3ff674f27abab217654a723000b78fa57adf1fde1191488aca69986dd0aa007f&=">
+    <meta name="twitter:image" content="https://files.catbox.moe/a2qpgm.gif">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -122,8 +122,8 @@
         }
 
         @keyframes cardReveal {
-            from { opacity: 0; transform: translateY(14px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px) scale(0.975); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);     }
         }
 
         /* MAIN */
@@ -139,7 +139,7 @@
         }
 
         #main-content.visible {
-            animation: cardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: cardReveal 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         /* CARD — horizontal pill */
@@ -159,13 +159,16 @@
             will-change: transform;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         /* PFP */
         .pfp-wrap {
             position: relative;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .pfp {
@@ -229,12 +232,14 @@
             height: 28px;
             background: rgba(255,255,255,0.05);
             flex-shrink: 0;
+            align-self: center;
         }
 
         /* SOCIALS — plain icons, no boxes */
         .socials {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 14px;
             flex-shrink: 0;
         }
@@ -245,25 +250,26 @@
             justify-content: center;
             background: none;
             border: none;
-            color: rgba(255,255,255,0.28);
-            font-size: 20px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: color 0.2s ease, transform 0.18s ease;
-            width: 24px;
-            height: 24px;
-            line-height: 1;
-            flex-shrink: 0;
-        }
-
-        .social-btn i {
-            font-size: 20px;
+            padding: 0;
+            /* base size — overridden per breakpoint */
             width: 20px;
             height: 20px;
+            font-size: 20px;
+            line-height: 1;
+            color: rgba(255,255,255,0.28);
+            text-decoration: none;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: color 0.2s ease, transform 0.18s ease;
+        }
+
+        /* FA icons: just inherit font-size, let flex centre them */
+        .social-btn i {
+            font-size: inherit;
+            line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            line-height: 1;
         }
 
         .social-btn:hover,
@@ -272,7 +278,7 @@
             transform: translateY(-2px);
         }
 
-        /* ROBLOX CUSTOM IMAGE ICON */
+        /* ROBLOX IMAGE ICON — same size as font-size */
         .roblox-img {
             width: 20px;
             height: 20px;
@@ -281,6 +287,7 @@
             filter: brightness(0) invert(1);
             opacity: 0.28;
             transition: opacity 0.2s ease;
+            flex-shrink: 0;
         }
 
         .social-btn:hover .roblox-img,
@@ -702,63 +709,67 @@
                 border-color: rgba(110,110,110,0.22);
             }
 
-            .pfp {
-                width: 56px;
-                height: 56px;
-            }
+            .pfp { width: 56px; height: 56px; }
 
-            .card-name {
-                font-size: 20px;
-            }
+            .card-name { font-size: 20px; }
 
-            .vdivider {
-                height: 32px;
-            }
+            .vdivider { height: 32px; }
 
-            .socials {
-                gap: 18px;
-            }
+            .socials { gap: 18px; }
 
+            /* Icons: 22px uniformly */
             .social-btn {
-                font-size: 21px;
-                width: 26px;
-                height: 26px;
-            }
-
-            .social-btn i {
-                font-size: 21px;
-                width: 21px;
-                height: 21px;
+                width: 22px;
+                height: 22px;
+                font-size: 22px;
             }
 
             .roblox-img {
-                width: 21px;
-                height: 21px;
+                width: 22px;
+                height: 22px;
             }
         }
 
         /* MOBILE */
         @media (max-width: 540px) {
             .card {
-                padding: 9px 11px;
-                max-width: 280px;
+                padding: 9px 12px;
+                max-width: 300px;
                 border-radius: 13px;
                 gap: 8px;
             }
 
-            .pfp { width: 38px; height: 38px; }
+            .pfp { width: 40px; height: 40px; }
 
-            .card-name { font-size: 14px; margin-bottom: 1px; }
-            .card-bio  { font-size: 8px; }
+            .card-name { font-size: 15px; margin-bottom: 1px; }
+            .card-bio  { font-size: 8px; letter-spacing: 1.4px; }
 
-            .vdivider { height: 22px; }
+            .vdivider { height: 24px; }
 
-            .socials { gap: 16px; }
+            .socials { gap: 15px; }
 
-            .social-btn { font-size: 22px; width: 24px; height: 24px; }
-            .social-btn i { font-size: 22px; width: 22px; height: 22px; }
+            /* Icons: 20px uniformly */
+            .social-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 20px;
+            }
 
-            .roblox-img { width: 22px; height: 22px; }
+            .roblox-img {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 360px) {
+            .card { max-width: 260px; padding: 8px 10px; gap: 7px; }
+            .pfp { width: 36px; height: 36px; }
+            .card-name { font-size: 13px; }
+            .socials { gap: 12px; }
+            .social-btn { width: 18px; height: 18px; font-size: 18px; }
+            .roblox-img { width: 18px; height: 18px; }
+            .vdivider { height: 20px; }
         }
     </style>
 </head>
@@ -766,7 +777,7 @@
 
     <div id="bg-overlay"></div>
     <canvas id="particles"></canvas>
-    <audio id="bg-audio" loop src="https://file.garden/advUdw57_HghQzKi/4c13e99f-df62-4655-99ff-890b2398a0f5.mp3"></audio>
+    <audio id="bg-audio" loop preload="auto" src="https://file.garden/advUdw57_HghQzKi/4c13e99f-df62-4655-99ff-890b2398a0f5.mp3"></audio>
 
     <!-- ENTER -->
     <div id="enter-screen" oncontextmenu="return false;">
@@ -795,7 +806,7 @@
                     <i class="fa-brands fa-discord"></i>
                 </a>
                 <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-btn" title="Roblox">
-                    <img src="https://cdn.discordapp.com/attachments/1470693318697422929/1507219874022297721/fb1c35476a849b97bdc8a366d6388601-removebg-preview_-_Copie.png?ex=6a111b64&is=6a0fc9e4&hm=cc306615eda31ec5ce223fc34f4ac659b48e7581f26f011853f10386fdf41931&" class="roblox-img" alt="Roblox" draggable="false">
+                    <img src="https://files.catbox.moe/lgabmt.png" class="roblox-img" alt="Roblox" draggable="false">
                 </a>
                 <a href="#" id="insta-btn" class="social-btn" title="Instagram">
                     <i class="fa-brands fa-instagram"></i>
@@ -916,19 +927,48 @@
         }
         animateParticles();
 
+        /* ── AUDIO FADE HELPER ── */
+        const bgAudio = document.getElementById('bg-audio');
+        let _fadeTimer = null;
+
+        /* ── PRELOAD AUDIO SILENTLY IN BACKGROUND ── */
+        bgAudio.preload = 'auto';
+
+        function fadeAudio(target, duration) {
+            duration = duration || 380;
+            clearInterval(_fadeTimer);
+            const start = bgAudio.volume;
+            const diff  = target - start;
+            const steps = Math.max(24, Math.round(duration / 40));
+            const delay = duration / steps;
+            let step = 0;
+            _fadeTimer = setInterval(() => {
+                step++;
+                const progress = step / steps;
+                /* ease-out curve for smoother fade */
+                const eased = 1 - Math.pow(1 - progress, 2);
+                bgAudio.volume = Math.max(0, Math.min(1, start + diff * eased));
+                if (step >= steps) {
+                    bgAudio.volume = Math.max(0, Math.min(1, target));
+                    clearInterval(_fadeTimer);
+                }
+            }, delay);
+        }
+
         /* ── ENTER ── */
         const enterScreen = document.getElementById('enter-screen');
         const mainContent = document.getElementById('main-content');
-        const bgAudio     = document.getElementById('bg-audio');
+
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
             setTimeout(() => {
                 enterScreen.style.display = 'none';
                 mainContent.style.display = 'flex';
                 requestAnimationFrame(() => requestAnimationFrame(() => mainContent.classList.add('visible')));
+                /* Start silent, fade in smoothly over ~3s */
                 bgAudio.volume = 0;
                 bgAudio.play().catch(() => {});
-                fadeAudio(parseFloat(volSlider.value) || 0.65, 1600);
+                fadeAudio(parseFloat(volSlider.value) || 0.65, 3000);
                 updateDiscord();
                 setTimeout(initCtxMenu, 800);
             }, 480);
@@ -1005,34 +1045,18 @@
         const instaModal = document.getElementById('insta-modal');
         const instaVideo = document.getElementById('insta-video');
 
-        let _fadeTimer = null;
-        function fadeAudio(target, duration) {
-            duration = duration || 380;
-            clearInterval(_fadeTimer);
-            const start = bgAudio.volume;
-            const diff  = target - start;
-            const steps = 24;
-            const delay = duration / steps;
-            let step = 0;
-            _fadeTimer = setInterval(() => {
-                step++;
-                bgAudio.volume = Math.max(0, Math.min(1, start + diff * (step / steps)));
-                if (step >= steps) clearInterval(_fadeTimer);
-            }, delay);
-        }
-
         document.getElementById('insta-btn').addEventListener('click', e => {
             e.preventDefault();
             instaModal.style.display = 'flex';
             requestAnimationFrame(() => requestAnimationFrame(() => instaModal.classList.add('show')));
             instaVideo.play().catch(() => {});
-            fadeAudio(0);
+            fadeAudio(0, 380);
         });
 
         function closeInsta() {
             instaModal.classList.remove('show');
             instaVideo.pause();
-            fadeAudio(parseFloat(volSlider.value));
+            fadeAudio(parseFloat(volSlider.value), 380);
             setTimeout(() => { instaModal.style.display = 'none'; }, 320);
         }
 
@@ -1122,7 +1146,7 @@
                 const status = d.discord_status || 'offline';
                 const labels = { online: 'online', idle: 'idle', dnd: 'do not disturb', offline: 'offline' };
 
-                actDot.className      = 'act-dot ' + status;
+                actDot.className        = 'act-dot ' + status;
                 actStatusTx.textContent = labels[status] || status;
 
                 const acts   = d.activities || [];
@@ -1217,6 +1241,20 @@
             });
 
             tick();
+        })();
+
+        /* ── TAB VISIBILITY – AUDIO FADE ── */
+        (function () {
+            let _savedVol = 0.65;
+            document.addEventListener('visibilitychange', () => {
+                if (bgAudio.paused) return;
+                if (document.hidden) {
+                    _savedVol = bgAudio.volume || parseFloat(volSlider.value) || 0.65;
+                    fadeAudio(0, 1800);
+                } else {
+                    fadeAudio(_savedVol, 1400);
+                }
+            });
         })();
 
         /* ── CURSOR TRAIL ── */
