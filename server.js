@@ -10,6 +10,7 @@ const routes = {
     '/purged/':  path.join(__dirname, 'purged',  'index.html'),
     '/spoiled':  path.join(__dirname, 'spoiled', 'index.html'),
     '/spoiled/': path.join(__dirname, 'spoiled', 'index.html'),
+    
 };
 
 http.createServer((req, res) => {
