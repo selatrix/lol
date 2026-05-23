@@ -13,16 +13,16 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://media.discordapp.net/attachments/1470693318697422929/1507230251514593340/image0.png?ex=6a11250e&is=6a0fd38e&hm=793b30f87e1313fe09cf6c078d36f55f7ebd4119b241ca7e8e61c4f853965ef0&=&format=webp&quality=lossless">
+    <link rel="icon" type="image/png" href="https://files.catbox.moe/m42dz0.png">
     <meta property="og:title" content="can u hit me">
     <meta property="og:description" content="〉">
-    <meta property="og:image" content="https://media.discordapp.net/attachments/1470693318697422929/1507231111762153522/194E8B0F-3F3A-48FF-83D2-317865AE8F50.gif?ex=6a1125dc&is=6a0fd45c&hm=3ff674f27abab217654a723000b78fa57adf1fde1191488aca69986dd0aa007f&=">
+    <meta property="og:image" content="https://files.catbox.moe/a2qpgm.gif">
     <meta property="og:url" content="https://baited.online">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="can u hit me">
     <meta name="twitter:description" content="〉">
-    <meta name="twitter:image" content="https://media.discordapp.net/attachments/1470693318697422929/1507231111762153522/194E8B0F-3F3A-48FF-83D2-317865AE8F50.gif?ex=6a1125dc&is=6a0fd45c&hm=3ff674f27abab217654a723000b78fa57adf1fde1191488aca69986dd0aa007f&=">
+    <meta name="twitter:image" content="https://files.catbox.moe/a2qpgm.gif">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -60,6 +60,12 @@
             object-fit: cover;
             z-index: 0;
             filter: brightness(0.95);
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+
+        #bg-video.loaded {
+            opacity: 1;
         }
 
         #bg-overlay {
@@ -79,6 +85,46 @@
             inset: 0;
             background: radial-gradient(ellipse at 50% 0%, rgba(80,100,200,0.08) 0%, transparent 70%);
             pointer-events: none;
+        }
+
+        /* VIDEO LOADING SCREEN */
+        #vid-loading {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.9s ease;
+        }
+
+        #vid-loading.show {
+            opacity: 1;
+        }
+
+        .vl-ring {
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid rgba(255,255,255,0.06);
+            border-top-color: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            animation: spinRing 1.2s linear infinite;
+        }
+
+        .vl-text {
+            font-size: 9px;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.18);
+            font-weight: 400;
+        }
+
+        @keyframes spinRing {
+            to { transform: rotate(360deg); }
         }
 
         /* ENTER SCREEN */
@@ -135,8 +181,8 @@
         }
 
         @keyframes cardReveal {
-            from { opacity: 0; transform: translateY(14px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px) scale(0.975); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);     }
         }
 
         /* MAIN LAYOUT */
@@ -152,7 +198,7 @@
         }
 
         #main-content.visible {
-            animation: cardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: cardReveal 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         /* CARD */
@@ -201,10 +247,6 @@
                 0 8px 32px rgba(0,0,0,0.65);
         }
 
-        @keyframes spinRing {
-            to { transform: rotate(360deg); }
-        }
-
         .activity-wrap {
             display: flex;
             align-items: center;
@@ -245,8 +287,6 @@
             text-transform: lowercase;
         }
 
-        .profile-info {}
-
         .card-name {
             font-family: 'Playfair Display', Georgia, serif;
             font-size: 26px;
@@ -279,7 +319,7 @@
             margin-bottom: 20px;
         }
 
-        /* SOCIAL ICONS */
+        /* ── SOCIAL ICONS — VARIATION A (with border boxes) ── */
         .socials {
             display: flex;
             align-items: center;
@@ -287,10 +327,19 @@
             margin-bottom: 20px;
         }
 
+        /* Variant A: bordered boxes (default) */
         .social-btn {
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
+            text-decoration: none;
+            cursor: pointer;
+            /* sizes set per-variant below */
+        }
+
+        /* Variant A specific */
+        body.var-a .social-btn {
             width: 40px;
             height: 40px;
             border-radius: 10px;
@@ -298,18 +347,26 @@
             border: 1px solid var(--surface-border);
             color: rgba(255,255,255,0.4);
             font-size: 16px;
-            text-decoration: none;
-            cursor: pointer;
             transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
-        .social-btn:hover {
+        body.var-a .social-btn:hover {
             background: rgba(255,255,255,0.07);
             border-color: rgba(255,255,255,0.1);
             color: rgba(255,255,255,0.82);
         }
 
-        .social-btn img {
+        body.var-a .social-btn i {
+            font-size: 16px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+        }
+
+        body.var-a .social-btn img {
             width: 18px;
             height: 18px;
             object-fit: contain;
@@ -317,10 +374,54 @@
             -webkit-user-drag: none;
             opacity: 0.4;
             transition: opacity 0.2s ease;
+            display: block;
         }
 
-        .social-btn:hover img {
+        body.var-a .social-btn:hover img {
             opacity: 0.82;
+        }
+
+        /* Variant B: no box, bigger icons */
+        body.var-b .social-btn {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.38);
+            font-size: 24px;
+            transition: color 0.2s ease, transform 0.18s ease;
+        }
+
+        body.var-b .social-btn:hover {
+            color: rgba(255,255,255,0.85);
+            transform: translateY(-2px);
+        }
+
+        body.var-b .social-btn i {
+            font-size: 24px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+
+        body.var-b .social-btn img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            filter: brightness(0) invert(1);
+            opacity: 0.38;
+            transition: opacity 0.2s ease, transform 0.18s ease;
+            display: block;
+        }
+
+        body.var-b .social-btn:hover img {
+            opacity: 0.85;
+            transform: translateY(-2px);
         }
 
         /* DISCORD SECTION */
@@ -597,7 +698,6 @@
             border: none;
         }
 
-
         /* RIGHT-CLICK POPUP */
         #ctx-popup {
             position: fixed;
@@ -641,58 +741,35 @@
                 border-radius: 22px;
             }
 
-            .pfp {
-                width: 94px;
-                height: 94px;
-            }
+            .pfp { width: 94px; height: 94px; }
 
-            .profile-header {
-                gap: 12px;
-                margin-bottom: 18px;
-            }
+            .profile-header { gap: 12px; margin-bottom: 18px; }
 
-            .card-name {
-                font-size: 28px;
-            }
+            .card-name { font-size: 28px; }
+            .card-bio  { font-size: 10.5px; }
 
-            .card-bio {
-                font-size: 10.5px;
-            }
+            .divider { margin-bottom: 16px; }
 
-            .divider {
-                margin-bottom: 16px;
-            }
+            .socials { gap: 8px; margin-bottom: 16px; }
 
-            .socials {
-                gap: 8px;
-                margin-bottom: 16px;
-            }
-
-            .social-btn {
+            body.var-a .social-btn {
                 width: 44px;
                 height: 44px;
                 border-radius: 11px;
                 font-size: 17px;
             }
 
-            .social-btn img {
-                width: 20px;
-                height: 20px;
-            }
+            body.var-a .social-btn i { font-size: 17px; width: 17px; height: 17px; }
+            body.var-a .social-btn img { width: 20px; height: 20px; }
 
-            .discord-box {
-                padding: 13px 15px;
-                border-radius: 13px;
-            }
+            body.var-b .social-btn { width: 36px; height: 36px; font-size: 27px; }
+            body.var-b .social-btn i { font-size: 27px; width: 27px; height: 27px; }
+            body.var-b .social-btn img { width: 27px; height: 27px; }
 
-            .dc-pfp {
-                width: 32px;
-                height: 32px;
-            }
+            .discord-box { padding: 13px 15px; border-radius: 13px; }
 
-            .dc-username {
-                font-size: 13.5px;
-            }
+            .dc-pfp { width: 32px; height: 32px; }
+            .dc-username { font-size: 13.5px; }
         }
 
         /* MOBILE */
@@ -716,14 +793,19 @@
 
             .socials { gap: 7px; margin-bottom: 11px; }
 
-            .social-btn {
-                width: 52px;
-                height: 52px;
-                border-radius: 13px;
-                font-size: 22px;
+            body.var-a .social-btn {
+                width: 44px;
+                height: 44px;
+                border-radius: 11px;
+                font-size: 18px;
             }
 
-            .social-btn img { width: 24px; height: 24px; }
+            body.var-a .social-btn i { font-size: 18px; width: 18px; height: 18px; }
+            body.var-a .social-btn img { width: 20px; height: 20px; }
+
+            body.var-b .social-btn { width: 28px; height: 28px; font-size: 26px; }
+            body.var-b .social-btn i { font-size: 26px; width: 26px; height: 26px; }
+            body.var-b .social-btn img { width: 26px; height: 26px; }
 
             .discord-box { padding: 9px 11px; border-radius: 10px; }
 
@@ -742,6 +824,12 @@
 
     <video id="bg-video" loop playsinline preload="none"></video>
     <div id="bg-overlay"></div>
+
+    <!-- VIDEO LOADING INDICATOR -->
+    <div id="vid-loading">
+        <div class="vl-ring"></div>
+        <span class="vl-text">loading</span>
+    </div>
 
     <!-- ENTER -->
     <div id="enter-screen" oncontextmenu="return false;">
@@ -775,7 +863,7 @@
                     <i class="fa-brands fa-discord"></i>
                 </a>
                 <a href="https://www.roblox.com/users/835298548/profile" target="_blank" class="social-btn" title="Roblox">
-                    <img src="https://files.catbox.moe/q4jtcq.gif" alt="Roblox">
+                    <img src="https://files.catbox.moe/q4jtcq.gif" alt="Roblox" draggable="false">
                 </a>
                 <a href="#" id="insta-btn" class="social-btn" title="Instagram">
                     <i class="fa-brands fa-instagram"></i>
@@ -822,11 +910,57 @@
     <div id="ctx-popup">by <strong style="color:rgba(255,255,255,0.7);font-weight:600;">s3lf</strong></div>
 
     <script>
-        /* ENTER */
+        /* ── VARIANT SELECTION (random on load) ── */
+        document.body.classList.add(Math.random() < 0.5 ? 'var-a' : 'var-b');
+
+        /* ── ENTER ── */
         const enterScreen = document.getElementById('enter-screen');
         const mainContent = document.getElementById('main-content');
         const bgVideo     = document.getElementById('bg-video');
+        const vidLoading  = document.getElementById('vid-loading');
         const VIDEO_SRC   = "https://file.garden/advUdw57_HghQzKi/AQPszTVDbxPmUUm1Oc0nb8mA3O8ZCJtJC33tTPTW9yQDpiEVc-Kue6PNrNafRqrEmDsP6T-WYGEuNlioiucFOnwH91nxHS0AUCF2Gmc.mp4";
+        const TARGET_VOL  = 0.65;
+
+        let _volFadeTimer = null;
+        function fadeVideoIn(duration) {
+            duration = duration || 2600;
+            clearInterval(_volFadeTimer);
+            bgVideo.volume = 0;
+            const steps = 52;
+            const delay = duration / steps;
+            let step = 0;
+            _volFadeTimer = setInterval(() => {
+                step++;
+                const p = step / steps;
+                /* ease-in-out: starts near-silent, smoothly reaches target */
+                const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+                bgVideo.volume = Math.min(TARGET_VOL, TARGET_VOL * eased);
+                if (step >= steps) clearInterval(_volFadeTimer);
+            }, delay);
+        }
+
+        function fadeVideoOut(duration) {
+            duration = duration || 1600;
+            clearInterval(_volFadeTimer);
+            const from = bgVideo.volume;
+            const steps = 40;
+            const delay = duration / steps;
+            let step = 0;
+            _volFadeTimer = setInterval(() => {
+                step++;
+                const p = step / steps;
+                /* ease-in: slow start so fade feels imperceptible at first */
+                bgVideo.volume = Math.max(0, from * (1 - p * p));
+                if (step >= steps) { bgVideo.volume = 0; clearInterval(_volFadeTimer); }
+            }, delay);
+        }
+
+        /* ── PRELOAD VIDEO SILENTLY IN BACKGROUND ── */
+        bgVideo.src     = VIDEO_SRC;
+        bgVideo.preload = 'auto';
+        bgVideo.volume  = 0;
+        bgVideo.load();
+
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
 
@@ -834,9 +968,33 @@
                 enterScreen.style.display = 'none';
                 mainContent.style.display = 'flex';
                 requestAnimationFrame(() => requestAnimationFrame(() => mainContent.classList.add('visible')));
-                bgVideo.src = VIDEO_SRC;
-                bgVideo.volume = 0.65;
-                bgVideo.play().catch(() => {});
+
+                if (bgVideo.readyState >= 3) {
+                    /* Already buffered — play instantly */
+                    bgVideo.play().catch(() => {});
+                    bgVideo.classList.add('loaded');
+                    fadeVideoIn();
+                } else {
+                    /* Still loading — show subtle bg indicator, play when ready */
+                    const loadShowTimer = setTimeout(() => vidLoading.classList.add('show'), 200);
+                    bgVideo.addEventListener('canplay', () => {
+                        clearTimeout(loadShowTimer);
+                        vidLoading.classList.remove('show');
+                        bgVideo.play().catch(() => {});
+                        bgVideo.classList.add('loaded');
+                        fadeVideoIn();
+                    }, { once: true });
+                    /* Hard fallback */
+                    setTimeout(() => {
+                        if (bgVideo.paused) {
+                            vidLoading.classList.remove('show');
+                            bgVideo.play().catch(() => {});
+                            bgVideo.classList.add('loaded');
+                            fadeVideoIn();
+                        }
+                    }, 5000);
+                }
+
                 updateDiscord();
                 setTimeout(initCtxPopup, 800);
                 setTimeout(() => {
@@ -847,7 +1005,7 @@
             }, 480);
         }, { once: true });
 
-        /* CARD TILT */
+        /* ── CARD TILT ── */
         const card = document.getElementById('card');
         let tx = 0, ty = 0, cx = 0, cy = 0;
 
@@ -893,7 +1051,7 @@
             tx = 0; ty = 0;
         });
 
-        /* VOLUME */
+        /* ── VOLUME ── */
         const volBtn        = document.getElementById('vol-btn');
         const volSliderWrap = document.getElementById('vol-slider-wrap');
         const volSlider     = document.getElementById('vol-slider');
@@ -922,7 +1080,7 @@
             }
         });
 
-        /* INSTAGRAM MODAL */
+        /* ── INSTAGRAM MODAL ── */
         const instaModal = document.getElementById('insta-modal');
         const instaVideo = document.getElementById('insta-video');
 
@@ -946,7 +1104,7 @@
             }, 320);
         }
 
-        /* RIGHT-CLICK POPUP */
+        /* ── RIGHT-CLICK POPUP ── */
         const ctxPopup = document.getElementById('ctx-popup');
         let ctxTimer;
 
@@ -971,7 +1129,7 @@
 
         document.addEventListener('contextmenu', e => e.preventDefault());
 
-        /* DISCORD / LANYARD */
+        /* ── DISCORD / LANYARD ── */
         const DISCORD_ID = '396352442507198465';
 
         async function updateDiscord() {
@@ -1053,6 +1211,31 @@
             });
 
             tick();
+        })();
+
+        /* ── TAB VISIBILITY – VIDEO AUDIO FADE ── */
+        (function () {
+            let _savedVol = TARGET_VOL;
+            document.addEventListener('visibilitychange', () => {
+                if (bgVideo.paused) return;
+                if (document.hidden) {
+                    _savedVol = bgVideo.volume || TARGET_VOL;
+                    fadeVideoOut(1800);
+                } else {
+                    /* Fade back in to the volume the user had */
+                    clearInterval(_volFadeTimer);
+                    const target = _savedVol;
+                    const steps = 36, delay = 40;
+                    let s = 0;
+                    _volFadeTimer = setInterval(() => {
+                        s++;
+                        const p = s / steps;
+                        const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+                        bgVideo.volume = Math.min(target, target * eased);
+                        if (s >= steps) { bgVideo.volume = target; clearInterval(_volFadeTimer); }
+                    }, delay);
+                }
+            });
         })();
     </script>
 </body>
