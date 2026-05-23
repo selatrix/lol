@@ -5,7 +5,7 @@ const path = require('path');
 const PORT = 5000;
 
 const routes = {
-    '/':         path.join(__dirname, 'purged',  'index.html'),
+    '/':         path.join(__dirname, 'index.html'),
     '/purged':   path.join(__dirname, 'purged',  'index.html'),
     '/purged/':  path.join(__dirname, 'purged',  'index.html'),
     '/spoiled':  path.join(__dirname, 'spoiled', 'index.html'),
