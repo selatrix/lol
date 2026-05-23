@@ -866,6 +866,7 @@
         </div>
     </div>
 
+    <div id="tab-fade"></div>
     <script>
         /* ── PARTICLES ── */
         const canvas = document.getElementById('particles');
@@ -1050,26 +1051,45 @@
         const instaModal = document.getElementById('insta-modal');
         const instaVideo = document.getElementById('insta-video');
 
+        let _instaVolTimer;
+        function fadeInstaVol(to, ms) {
+            clearInterval(_instaVolTimer);
+            const from  = instaVideo.volume;
+            const diff  = to - from;
+            const steps = Math.max(1, Math.round(ms / 20));
+            let s = 0;
+            _instaVolTimer = setInterval(() => {
+                s++;
+                instaVideo.volume = Math.min(1, Math.max(0, from + diff * (s / steps)));
+                if (s >= steps) { instaVideo.volume = to; clearInterval(_instaVolTimer); }
+            }, 20);
+        }
+
         document.getElementById('insta-btn').addEventListener('click', e => {
             e.preventDefault();
+            instaVideo.volume = 0;
             instaVideo.classList.remove('vid-show');
             instaModal.style.display = 'flex';
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 instaModal.classList.add('show');
-                setTimeout(() => instaVideo.classList.add('vid-show'), 80);
+                setTimeout(() => {
+                    instaVideo.classList.add('vid-show');
+                    fadeInstaVol(1, 500);
+                }, 80);
             }));
             instaVideo.play().catch(() => {});
             fadeAudio(0, 380);
         });
 
         function closeInsta() {
+            fadeInstaVol(0, 350);
             instaVideo.classList.remove('vid-show');
             setTimeout(() => {
                 instaModal.classList.remove('show');
                 instaVideo.pause();
                 fadeAudio(parseFloat(volSlider.value), 380);
                 setTimeout(() => { instaModal.style.display = 'none'; }, 320);
-            }, 300);
+            }, 350);
         }
 
         /* ── DISCORD / LANYARD ── */
@@ -1264,7 +1284,9 @@
                     _savedVol = bgAudio.volume || parseFloat(volSlider.value) || 0.65;
                     fadeAudio(0, 1800);
                 } else {
-                    fadeAudio(_savedVol, 1400);
+                    if (!instaModal.classList.contains('show')) {
+                        fadeAudio(_savedVol, 1400);
+                    }
                 }
             });
         })();
@@ -1275,8 +1297,10 @@
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     tabFade.classList.add('show');
+                    if (instaModal.classList.contains('show')) fadeInstaVol(0, 1200);
                 } else {
                     tabFade.classList.remove('show');
+                    if (instaModal.classList.contains('show')) fadeInstaVol(1, 1000);
                 }
             });
         })();
@@ -1326,6 +1350,5 @@
             trailLoop();
         })();
     </script>
-    <div id="tab-fade"></div>
 </body>
 </html>
