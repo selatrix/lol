@@ -771,6 +771,11 @@
             .roblox-img { width: 18px; height: 18px; }
             .vdivider { height: 20px; }
         }
+
+        #insta-video { opacity: 0; transition: opacity 0.45s ease; }
+        #insta-video.vid-show { opacity: 1; }
+        #tab-fade { position: fixed; inset: 0; z-index: 400; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+        #tab-fade.show { opacity: 1; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1047,17 +1052,24 @@
 
         document.getElementById('insta-btn').addEventListener('click', e => {
             e.preventDefault();
+            instaVideo.classList.remove('vid-show');
             instaModal.style.display = 'flex';
-            requestAnimationFrame(() => requestAnimationFrame(() => instaModal.classList.add('show')));
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                instaModal.classList.add('show');
+                setTimeout(() => instaVideo.classList.add('vid-show'), 80);
+            }));
             instaVideo.play().catch(() => {});
             fadeAudio(0, 380);
         });
 
         function closeInsta() {
-            instaModal.classList.remove('show');
-            instaVideo.pause();
-            fadeAudio(parseFloat(volSlider.value), 380);
-            setTimeout(() => { instaModal.style.display = 'none'; }, 320);
+            instaVideo.classList.remove('vid-show');
+            setTimeout(() => {
+                instaModal.classList.remove('show');
+                instaVideo.pause();
+                fadeAudio(parseFloat(volSlider.value), 380);
+                setTimeout(() => { instaModal.style.display = 'none'; }, 320);
+            }, 300);
         }
 
         /* ── DISCORD / LANYARD ── */
@@ -1257,6 +1269,18 @@
             });
         })();
 
+        /* ── TAB VISIBILITY – VISUAL FADE ── */
+        (function () {
+            const tabFade = document.getElementById('tab-fade');
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    tabFade.classList.add('show');
+                } else {
+                    tabFade.classList.remove('show');
+                }
+            });
+        })();
+
         /* ── CURSOR TRAIL ── */
         (function() {
             if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
@@ -1302,5 +1326,6 @@
             trailLoop();
         })();
     </script>
+    <div id="tab-fade"></div>
 </body>
 </html>
