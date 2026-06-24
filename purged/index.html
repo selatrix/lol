@@ -68,6 +68,10 @@
             opacity: 1;
         }
 
+        #bg-video.dim {
+            filter: brightness(0.35);
+        }
+
         #bg-overlay {
             position: fixed;
             inset: 0;
@@ -924,7 +928,16 @@
         const mainContent = document.getElementById('main-content');
         const bgVideo     = document.getElementById('bg-video');
         const vidLoading  = document.getElementById('vid-loading');
-        const VIDEO_SRC   = "https://file.garden/advUdw57_HghQzKi/AQPszTVDbxPmUUm1Oc0nb8mA3O8ZCJtJC33tTPTW9yQDpiEVc-Kue6PNrNafRqrEmDsP6T-WYGEuNlioiucFOnwH91nxHS0AUCF2Gmc.mp4";
+
+        /* 50/50 bg video pick — anime edit plays dimmed */
+        const BG_VIDEOS = [
+            { src: "https://file.garden/advUdw57_HghQzKi/AQPszTVDbxPmUUm1Oc0nb8mA3O8ZCJtJC33tTPTW9yQDpiEVc-Kue6PNrNafRqrEmDsP6T-WYGEuNlioiucFOnwH91nxHS0AUCF2Gmc.mp4", dim: false },
+            { src: "https://file.garden/advUdw57_HghQzKi/1999%20-%20beabadoobee%20%20Anime%20edit%20-%20tk_eap%20(1080p%2C%20h264).mp4", dim: true }
+        ];
+        const chosenBg  = BG_VIDEOS[Math.random() < 0.5 ? 0 : 1];
+        const VIDEO_SRC = chosenBg.src;
+        if (chosenBg.dim) bgVideo.classList.add('dim');
+
         const TARGET_VOL  = 0.65;
 
         let _volFadeTimer = null;
@@ -1255,7 +1268,6 @@
                     fadeVideoOut(1800);
                 } else {
                     if (!instaModal.classList.contains('show')) {
-                        /* Fade back in to the volume the user had */
                         clearInterval(_volFadeTimer);
                         const target = _savedVol;
                         const steps = 36, delay = 40;
