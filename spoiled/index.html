@@ -717,7 +717,6 @@
 
             .socials { gap: 18px; }
 
-            /* Icons: 22px uniformly */
             .social-btn {
                 width: 22px;
                 height: 22px;
@@ -748,7 +747,6 @@
 
             .socials { gap: 15px; }
 
-            /* Icons: 20px uniformly */
             .social-btn {
                 width: 20px;
                 height: 20px;
@@ -937,7 +935,6 @@
         const bgAudio = document.getElementById('bg-audio');
         let _fadeTimer = null;
 
-        /* ── PRELOAD AUDIO SILENTLY IN BACKGROUND ── */
         bgAudio.preload = 'auto';
 
         function fadeAudio(target, duration) {
@@ -951,7 +948,6 @@
             _fadeTimer = setInterval(() => {
                 step++;
                 const progress = step / steps;
-                /* ease-out curve for smoother fade */
                 const eased = 1 - Math.pow(1 - progress, 2);
                 bgAudio.volume = Math.max(0, Math.min(1, start + diff * eased));
                 if (step >= steps) {
@@ -971,7 +967,6 @@
                 enterScreen.style.display = 'none';
                 mainContent.style.display = 'flex';
                 requestAnimationFrame(() => requestAnimationFrame(() => mainContent.classList.add('visible')));
-                /* Start silent, fade in smoothly over ~3s */
                 bgAudio.volume = 0;
                 bgAudio.play().catch(() => {});
                 fadeAudio(parseFloat(volSlider.value) || 0.65, 3000);
