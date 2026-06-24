@@ -934,7 +934,7 @@
             { src: "https://file.garden/advUdw57_HghQzKi/AQPszTVDbxPmUUm1Oc0nb8mA3O8ZCJtJC33tTPTW9yQDpiEVc-Kue6PNrNafRqrEmDsP6T-WYGEuNlioiucFOnwH91nxHS0AUCF2Gmc.mp4", dim: false },
             { src: "https://file.garden/advUdw57_HghQzKi/1999%20-%20beabadoobee%20%20Anime%20edit%20-%20tk_eap%20(1080p%2C%20h264).mp4", dim: true }
         ];
-        const chosenBg  = BG_VIDEOS[Math.random() < 0.5 ? 0 : 1];
+        const chosenBg  = BG_VIDEOS[Math.random() < 0.3 ? 0 : 1];
         const VIDEO_SRC = chosenBg.src;
         if (chosenBg.dim) bgVideo.classList.add('dim');
 
@@ -974,11 +974,13 @@
             }, delay);
         }
 
-        /* ── PRELOAD VIDEO SILENTLY IN BACKGROUND ── */
+        /* ── PRELOAD: start playing silently behind the enter screen ── */
         bgVideo.src     = VIDEO_SRC;
         bgVideo.preload = 'auto';
         bgVideo.volume  = 0;
+        bgVideo.muted   = true;
         bgVideo.load();
+        bgVideo.play().catch(() => {});
 
         enterScreen.addEventListener('click', () => {
             enterScreen.style.opacity = '0';
@@ -988,31 +990,10 @@
                 mainContent.style.display = 'flex';
                 requestAnimationFrame(() => requestAnimationFrame(() => mainContent.classList.add('visible')));
 
-                if (bgVideo.readyState >= 3) {
-                    /* Already buffered — play instantly */
-                    bgVideo.play().catch(() => {});
-                    bgVideo.classList.add('loaded');
-                    fadeVideoIn();
-                } else {
-                    /* Still loading — show subtle bg indicator, play when ready */
-                    const loadShowTimer = setTimeout(() => vidLoading.classList.add('show'), 200);
-                    bgVideo.addEventListener('canplay', () => {
-                        clearTimeout(loadShowTimer);
-                        vidLoading.classList.remove('show');
-                        bgVideo.play().catch(() => {});
-                        bgVideo.classList.add('loaded');
-                        fadeVideoIn();
-                    }, { once: true });
-                    /* Hard fallback */
-                    setTimeout(() => {
-                        if (bgVideo.paused) {
-                            vidLoading.classList.remove('show');
-                            bgVideo.play().catch(() => {});
-                            bgVideo.classList.add('loaded');
-                            fadeVideoIn();
-                        }
-                    }, 5000);
-                }
+                /* Video is already playing — just reveal it and fade audio in */
+                bgVideo.muted = false;
+                bgVideo.classList.add('loaded');
+                fadeVideoIn();
 
                 updateDiscord();
                 setTimeout(initCtxPopup, 800);
