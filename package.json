@@ -1,0 +1,11 @@
+{
+  "name": "s3lf",
+  "version": "1.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.22.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
