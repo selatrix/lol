@@ -159,7 +159,9 @@ app.post('/api/messages/:id/reply', (req, res) => {
     saveMessages(msgs);
     res.json({ success: true });
 });
-
+/* ── health / wake ── */
+app.get('/ping',   (_, res) => res.send('pong'));
+app.get('/health', (_, res) => res.json({ status: 'ok', uptime: process.uptime(), ts: Date.now() }));
 /* ── static ── */
 app.use('/purged',  express.static(path.join(__dirname, 'purged')));
 app.use('/spoiled', express.static(path.join(__dirname, 'spoiled')));
